@@ -14,8 +14,8 @@ import * as ext from '../../extension';
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Extension Tests", function () {
   // Defines a Mocha unit test
-  test("generate tree", function() {
-    let result = ext.startTree(__dirname, 0);
+  test("generate ascii tree", function() {
+    let result = ext.asciiTree(__dirname, 0);
     assert.equal(' ┣ <span class="t-icon" name="icons">📜</span>extension.test.js<br> ┣ <span class="t-icon" name="icons">📜</span>extension.test.js.map<br> ┣ <span class="t-icon" name="icons">📜</span>index.js<br> ┗ <span class="t-icon" name="icons">📜</span>index.js.map<br>', result);
   });
 });
