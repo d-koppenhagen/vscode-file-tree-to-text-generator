@@ -2,8 +2,12 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.1.0] - 2019-09-03 (Initial Version)
 
-## [Unreleased]
+### New
 
-- Initial release
+- Generate file / directory trees into _ASCII_, _LATEX_ and _Markdown_ formats.
+
+### Fixed
+
+- nothing yet

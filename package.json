@@ -2,11 +2,11 @@
 	"name": "file-tree-to-text-generator",
 	"displayName": "file-tree-to-text-generator",
 	"description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.37.0"
 	},
-	"icon": "image/icon.png",
+	"icon": "images/icon.png",
 	"categories": [
 		"Other"
   ],
