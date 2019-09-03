@@ -1,11 +1,16 @@
 # file-tree-to-text-generator
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
+
 This extension will allow you to generate file / directory trees for different target formats.
 Currently supported are:
 
 - Markdown
 - LaTeX (DirTree)
 - ASCII
+
+[GitHub](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator)
 
 ## How to use
 
