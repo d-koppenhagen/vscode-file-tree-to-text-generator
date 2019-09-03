@@ -12,10 +12,25 @@ import * as assert from 'assert';
 import * as ext from '../../extension';
 
 // Defines a Mocha test suite to group tests of similar kind together
-suite("Extension Tests", function () {
+suite('Extension Tests', () => {
   // Defines a Mocha unit test
-  test("generate ascii tree", function() {
+  test('generate ascii tree', () => {
     let result = ext.asciiTree(__dirname, 0);
-    assert.equal(' ┣ <span class="t-icon" name="icons">📜</span>extension.test.js<br> ┣ <span class="t-icon" name="icons">📜</span>extension.test.js.map<br> ┣ <span class="t-icon" name="icons">📜</span>index.js<br> ┗ <span class="t-icon" name="icons">📜</span>index.js.map<br>', result);
+    assert.equal('┣ extension.test.js<br>┣ extension.test.js.map<br>┣ index.js<br>┗ index.js.map<br>', result);
+  });
+
+  test('generate latex tree', () => {
+    let result = ext.latexTree(__dirname, 0);
+    assert.equal('  .2 extension.test.js .<br>  .2 extension.test.js.map .<br>  .2 index.js .<br>  .2 index.js.map .<br>', result);
+  });
+
+  test('generate markdown tree', () => {
+    let result = ext.markdownTree(__dirname, 0);
+    assert.equal('* [extension.test.js](./Users/dannykoppenhagen/dev/file-tree-to-text-generator/out/test/suite/extension.test.js)<br>* [extension.test.js.map](./Users/dannykoppenhagen/dev/file-tree-to-text-generator/out/test/suite/extension.test.js.map)<br>* [index.js](./Users/dannykoppenhagen/dev/file-tree-to-text-generator/out/test/suite/index.js)<br>* [index.js.map](./Users/dannykoppenhagen/dev/file-tree-to-text-generator/out/test/suite/index.js.map)<br>', result);
+  });
+
+  test('format an enty', () => {
+    let result = ext.format(3, 'ABCD', 'testEl', '*+#');
+    assert.equal('*+#*+#*+#ABCDtestEl<br>', result);
   });
 });
