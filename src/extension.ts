@@ -13,6 +13,10 @@ const AvailableFormats: {[key: string]: vscode.QuickPickItem } = {
   latex: {
     label: 'LaTeX',
     description: 'Convert to LaTeX (DirTree)',
+  },
+  markdown: {
+    label: 'Markdown',
+    description: 'Convert to Markdown',
   }
 };
 
@@ -32,6 +36,12 @@ export function activate(ctx: vscode.ExtensionContext) {
         const pre = '\dirtree{%';
         const post = '}';
         tree += `${pre}<br/>  .1 ${path.basename(startDir.fsPath)}/<br/>${latexTree(startDir.fsPath, 0)}${post}`;
+      }
+
+      // Markdown Tree
+      if (selected && selected.label === AvailableFormats.markdown.label) {
+        const basePathBeforeSelection = path.dirname(startDir.fsPath);
+        tree += `# ${path.basename(startDir.fsPath)}<br/><br/>${markdownTree(startDir.fsPath, 0, basePathBeforeSelection)}<br/>`;
       }
 
       const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
@@ -136,6 +146,51 @@ export function latexTree(targetPath: string, deps: number) {
         pipe,
         `.${deps + 2} ${el.toString()} .`,
         ''
+      );
+    }
+  });
+  return text;
+}
+
+// directory and file ditective function
+export function markdownTree(targetPath: string, deps: number, cutPath = '') {
+  let text = '';
+  if (!fs.existsSync(targetPath)) { return ''; }
+
+  // order by directory > file
+  const beforSortFiles = fs.readdirSync(targetPath);
+  let paths: string[] = [];
+
+  let tmp: string[] = [];
+  beforSortFiles.forEach(el => {
+    const fullPath = path.join(targetPath, el.toString());
+    if (fs.statSync(fullPath).isDirectory()) {
+      paths.push(el);
+    } else {
+      tmp.push(el);
+    }
+  });
+  paths = paths.concat(tmp);
+
+  paths.forEach(el => {
+    const fullPath = path.join(targetPath, el.toString());
+    const pipe = '';
+
+    // add directories
+    if (fs.statSync(fullPath).isDirectory()) {
+      text += format(
+        deps,
+        pipe,
+        `* [${el.toString()}/](.${fullPath.replace(cutPath, '')})`,
+        '  '
+      );
+      text += markdownTree(fullPath, deps + 1, cutPath);
+    } else { // add files
+      text += format(
+        deps,
+        pipe,
+        `* [${el.toString()}](.${fullPath.replace(cutPath, '')})`,
+        '  '
       );
     }
   });
