@@ -9,7 +9,18 @@
 	"icon": "image/icon.png",
 	"categories": [
 		"Other"
-	],
+  ],
+  "keywords": [
+    "markdown",
+    "ascii",
+    "asciitree",
+    "latex",
+    "tex",
+    "dirtree",
+    "tree",
+    "filetree",
+    "dirtree"
+  ],
 	"activationEvents": [
 		"onCommand:extension.fileTreeToText"
 	],
