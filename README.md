@@ -1,5 +1,6 @@
 # file-tree-to-text-generator
 
+[![VSCode Marketplace](https://vsmarketplacebadge.apphb.com/version/d-koppenhagen.file-tree-to-text-generator.svg)](https://marketplace.visualstudio.com/items?itemName=d-koppenhagen.file-tree-to-text-generator)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
