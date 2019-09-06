@@ -27,6 +27,12 @@ See how easy it is:
 
 ![File-Tree-To-Text Demo GIF](./images/file-tree-to-text.gif)
 
+### Configuration
+
+You can easily set default values and even disable the promt.
+
+![File-Tree-To-Text Configuration](./images/file-tree-to-text-config.png)
+
 ## Extension Settings
 
 In the current version, no extension settings can be configured. You will be prompt for necessary information.

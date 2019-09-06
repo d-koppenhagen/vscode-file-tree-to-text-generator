@@ -2,7 +2,7 @@
 	"name": "file-tree-to-text-generator",
 	"displayName": "file-tree-to-text-generator",
 	"description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator.git"
@@ -77,9 +77,9 @@
         "tree-generator.prompt": {
 					"type": "boolean",
 					"default": true,
-					"description": "Choose if the user will be promt or if the default settings will take affect"
+					"description": "Choose if the user will be promt or if the default settings will  be applied"
         }
-      }
+			}
 		}
 	},
 	"scripts": {
