@@ -23,37 +23,47 @@ const AvailableFormats: {[key: string]: vscode.QuickPickItem } = {
 export function activate(ctx: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.fileTreeToText', (startDir) => {
     vscode.window.showQuickPick(Object.values(AvailableFormats)).then((selected) => {
-      // tree root item
-      let tree = '';
+      const defaultVal = 5;
+      vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        prompt: 'Select the max depth of the tree',
+        value: defaultVal.toString(),
+        validateInput(value) {
+          return (Number(value) && Number(value) > 0 || !value) ? null : 'Please enter a valid number greater then 0 or leave the input empty';
+        }
+      }).then((maxDepth) => {
+        // tree root item
+        let tree = '';
 
-      // ASCII Tree
-      if (selected && selected.label === AvailableFormats.ascii.label) {
-        tree += `${path.basename(startDir.fsPath)}/<br/>${asciiTree(startDir.fsPath, 0)}`;
-      }
+        // ASCII Tree
+        if (selected && selected.label === AvailableFormats.ascii.label) {
+          tree += `${path.basename(startDir.fsPath)}/<br/>${asciiTree(startDir.fsPath, 0, Number(maxDepth))}`;
+        }
 
-      // LaTeX DirTree
-      if (selected && selected.label === AvailableFormats.latex.label) {
-        const pre = '\dirtree{%';
-        const post = '}';
-        tree += `${pre}<br/>  .1 ${path.basename(startDir.fsPath)}/<br/>${latexTree(startDir.fsPath, 0)}${post}`;
-      }
+        // LaTeX DirTree
+        if (selected && selected.label === AvailableFormats.latex.label) {
+          const pre = '\dirtree{%';
+          const post = '}';
+          tree += `${pre}<br/>  .1 ${path.basename(startDir.fsPath)}/<br/>${latexTree(startDir.fsPath, 0, Number(maxDepth))}${post}`;
+        }
 
-      // Markdown Tree
-      if (selected && selected.label === AvailableFormats.markdown.label) {
-        const basePathBeforeSelection = path.dirname(startDir.fsPath);
-        tree += `# ${path.basename(startDir.fsPath)}<br/><br/>${markdownTree(startDir.fsPath, 0, basePathBeforeSelection)}<br/>`;
-      }
+        // Markdown Tree
+        if (selected && selected.label === AvailableFormats.markdown.label) {
+          const basePathBeforeSelection = path.dirname(startDir.fsPath);
+          tree += `# ${path.basename(startDir.fsPath)}<br/><br/>${markdownTree(startDir.fsPath, 0, Number(maxDepth), basePathBeforeSelection)}<br/>`;
+        }
 
-      const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
-        'text',
-        `${selected ? selected.label : ''} File Tree`,
-        { viewColumn: vscode.ViewColumn.Active },
-        { enableScripts: true }
-      );
-      // rerplace the target placeholder with the generated tree
-      vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
+        const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
+          'text',
+          `${selected ? selected.label : ''} File Tree`,
+          { viewColumn: vscode.ViewColumn.Active },
+          { enableScripts: true }
+        );
+        // rerplace the target placeholder with the generated tree
+        vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
 
-      ctx.subscriptions.push(disposable);
+        ctx.subscriptions.push(disposable);
+      });
     });
   });
 }
@@ -65,7 +75,7 @@ export function format(deps: number, pipe: string, name: string, indent = '┃ '
 }
 
 // directory and file ditective function
-export function asciiTree(targetPath: string, deps: number) {
+export function asciiTree(targetPath: string, deps: number, maxDepth?: number) {
   let text = '';
   if (!fs.existsSync(targetPath)) { return ''; }
 
@@ -95,7 +105,11 @@ export function asciiTree(targetPath: string, deps: number) {
         pipe,
         `${el.toString()}/`
       );
-      text += asciiTree(fullPath, deps + 1);
+      if (!maxDepth) {
+        text += asciiTree(fullPath, deps + 1);
+      } else if(deps !== maxDepth - 1) {
+        text += asciiTree(fullPath, deps + 1, maxDepth);
+      }
     } else { // add files
       text += format(
         deps,
@@ -108,7 +122,7 @@ export function asciiTree(targetPath: string, deps: number) {
 }
 
 // directory and file ditective function
-export function latexTree(targetPath: string, deps: number) {
+export function latexTree(targetPath: string, deps: number, maxDepth?: number) {
   let text = '';
   if (!fs.existsSync(targetPath)) { return ''; }
 
@@ -139,7 +153,11 @@ export function latexTree(targetPath: string, deps: number) {
         `.${deps + 2} ${el.toString()}/ .`,
         ''
       );
-      text += latexTree(fullPath, deps + 1);
+      if (!maxDepth) {
+        text += latexTree(fullPath, deps + 1);
+      } else if(deps !== maxDepth - 1) {
+        text += latexTree(fullPath, deps + 1, maxDepth);
+      }
     } else { // add files
       text += format(
         deps,
@@ -153,7 +171,7 @@ export function latexTree(targetPath: string, deps: number) {
 }
 
 // directory and file ditective function
-export function markdownTree(targetPath: string, deps: number, cutPath = '') {
+export function markdownTree(targetPath: string, deps: number, maxDepth?: number, cutPath = '') {
   let text = '';
   if (!fs.existsSync(targetPath)) { return ''; }
 
@@ -184,7 +202,11 @@ export function markdownTree(targetPath: string, deps: number, cutPath = '') {
         `* [${el.toString()}/](.${fullPath.replace(cutPath, '')})`,
         '  '
       );
-      text += markdownTree(fullPath, deps + 1, cutPath);
+      if (!maxDepth) {
+        text += markdownTree(fullPath, deps + 1, undefined, cutPath);
+      } else if(deps !== maxDepth - 1) {
+        text += markdownTree(fullPath, deps + 1, maxDepth, cutPath);
+      }
     } else { // add files
       text += format(
         deps,
