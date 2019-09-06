@@ -21,50 +21,56 @@ const AvailableFormats: {[key: string]: vscode.QuickPickItem } = {
 };
 
 export function activate(ctx: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand('extension.fileTreeToText', (startDir) => {
-    vscode.window.showQuickPick(Object.values(AvailableFormats)).then((selected) => {
-      const defaultVal = 5;
-      vscode.window.showInputBox({
+  const disposable = vscode.commands.registerCommand('extension.fileTreeToText', async (startDir) => {
+    let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as Number;
+    let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as String;
+    let selected = Object.values(AvailableFormats).find(el => el.label === defaultTarget);
+    const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as Boolean;
+
+    if (promptUser) {
+      selected = await vscode.window.showQuickPick(Object.values(AvailableFormats));
+      const depth = await vscode.window.showInputBox({
         ignoreFocusOut: true,
         prompt: 'Select the max depth of the tree',
-        value: defaultVal.toString(),
+        value: maxDepth.toString(),
         validateInput(value) {
           return (Number(value) && Number(value) > 0 || !value) ? null : 'Please enter a valid number greater then 0 or leave the input empty';
         }
-      }).then((maxDepth) => {
-        // tree root item
-        let tree = '';
-
-        // ASCII Tree
-        if (selected && selected.label === AvailableFormats.ascii.label) {
-          tree += `${path.basename(startDir.fsPath)}/<br/>${asciiTree(startDir.fsPath, 0, Number(maxDepth))}`;
-        }
-
-        // LaTeX DirTree
-        if (selected && selected.label === AvailableFormats.latex.label) {
-          const pre = '\dirtree{%';
-          const post = '}';
-          tree += `${pre}<br/>  .1 ${path.basename(startDir.fsPath)}/<br/>${latexTree(startDir.fsPath, 0, Number(maxDepth))}${post}`;
-        }
-
-        // Markdown Tree
-        if (selected && selected.label === AvailableFormats.markdown.label) {
-          const basePathBeforeSelection = path.dirname(startDir.fsPath);
-          tree += `# ${path.basename(startDir.fsPath)}<br/><br/>${markdownTree(startDir.fsPath, 0, Number(maxDepth), basePathBeforeSelection)}<br/>`;
-        }
-
-        const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
-          'text',
-          `${selected ? selected.label : ''} File Tree`,
-          { viewColumn: vscode.ViewColumn.Active },
-          { enableScripts: true }
-        );
-        // rerplace the target placeholder with the generated tree
-        vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
-
-        ctx.subscriptions.push(disposable);
       });
-    });
+      maxDepth = Number(depth);
+    }
+
+    // tree root item
+    let tree = '';
+
+    // ASCII Tree
+    if (selected && selected.label === AvailableFormats.ascii.label) {
+      tree += `${path.basename(startDir.fsPath)}/<br/>${asciiTree(startDir.fsPath, 0, Number(maxDepth))}`;
+    }
+
+    // LaTeX DirTree
+    if (selected && selected.label === AvailableFormats.latex.label) {
+      const pre = '\dirtree{%';
+      const post = '}';
+      tree += `${pre}<br/>  .1 ${path.basename(startDir.fsPath)}/<br/>${latexTree(startDir.fsPath, 0, Number(maxDepth))}${post}`;
+    }
+
+    // Markdown Tree
+    if (selected && selected.label === AvailableFormats.markdown.label) {
+      const basePathBeforeSelection = path.dirname(startDir.fsPath);
+      tree += `# ${path.basename(startDir.fsPath)}<br/><br/>${markdownTree(startDir.fsPath, 0, Number(maxDepth), basePathBeforeSelection)}<br/>`;
+    }
+
+    const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
+      'text',
+      `${selected ? selected.label : ''} File Tree`,
+      { viewColumn: vscode.ViewColumn.Active },
+      { enableScripts: true }
+    );
+    // rerplace the target placeholder with the generated tree
+    vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
+
+    ctx.subscriptions.push(disposable);
   });
 }
 

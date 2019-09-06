@@ -15,7 +15,11 @@
 	"engines": {
 		"vscode": "^1.37.0"
 	},
-	"icon": "images/icon.png",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+		"color": "beige",
+		"theme": "light"
+	},
 	"categories": [
 		"Other"
 	],
@@ -31,7 +35,7 @@
 		"dirtree"
 	],
 	"activationEvents": [
-		"onCommand:extension.fileTreeToText"
+    "onCommand:extension.fileTreeToText"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -49,6 +53,33 @@
 					"group": "cmdGroup@1"
 				}
 			]
+    },
+    "configuration": {
+			"id": "tree-generator",
+			"type": "object",
+			"title": "File Tree To Text Generator configuration",
+			"properties": {
+				"tree-generator.defaultDepth": {
+					"type": "integer",
+					"default": 5,
+					"description": "Default max depth of the generated tree"
+        },
+        "tree-generator.defaultTarget": {
+          "type": "string",
+          "enum": [
+            "ASCII",
+            "LaTeX",
+            "Markdown"
+          ],
+					"default": "ASCII",
+					"description": "Set your default output format"
+        },
+        "tree-generator.prompt": {
+					"type": "boolean",
+					"default": true,
+					"description": "Choose if the user will be promt or if the default settings will take affect"
+        }
+      }
 		}
 	},
 	"scripts": {
