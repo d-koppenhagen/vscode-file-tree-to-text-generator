@@ -18,6 +18,7 @@ Currently supported are:
 1. Install the extension
 1. Right click on a directory inside the vscode file explorer and choose ("File Tree To Text")
 1. Choose your target format from the prompt
+1. Choose the max depth or leave the output empty to get the whole tree from the choosen directory
 1. The target code willl be generated and displayed in new tab now
 
 ## Features
@@ -43,7 +44,6 @@ This extension contributes the following settings:
 
 ## Known Issues and Improvements
 
-- It should be possible to limit the file tree depth, therefore a promt shoul be provided
 - Add the ability to specify some default values in the vscode configuration file
 - Add the ability to specify `preFileEntryString`, `postFileEntryString`, `preDirEntryString`, `postDirEntryString`, `preTreeString` and `postTreeString`, to let the user be able to customize the output
 - refactor the methods for the available output generation, so that they are more generic (reduce amount of duplicate code)
