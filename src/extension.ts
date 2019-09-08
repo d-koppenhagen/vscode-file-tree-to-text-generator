@@ -5,78 +5,36 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 type SupportedFormats = 'ascii' | 'latex' | 'markdown';
-
-const AvailableFormats: {[key in SupportedFormats]: vscode.QuickPickItem } = {
-  ascii: {
-    label: 'ASCII',
-    description: 'Convert to ASCII Tree',
-    picked: true,
-  },
-  latex: {
-    label: 'LaTeX',
-    description: 'Convert to LaTeX (DirTree)',
-  },
-  markdown: {
-    label: 'Markdown',
-    description: 'Convert to Markdown',
-  }
-};
-
-const defaultConfig: {[key: string]: TreeConfig} = {
-  ascii: {
-    beforeTree: '',
-    afterTree: '',
-    indent: '┃ ',
-    masks: {
-      root: '#1/',
-      file: {
-        default: '┣ #1',
-        last: '┗ #1'
-      },
-      directory: {
-        default: '┣ #1/'
-      },
-    }
-  },
-  latex: {
-    beforeTree: '\dirtree{%<br/>',
-    afterTree: '}',
-    indent: '',
-    masks: {
-      root: '. #0 #1 .',
-      file: {
-        default: '. #0 #1 .'
-      },
-      directory: {
-        default: '. #0 #1/ .'
-      },
-    }
-  },
-  markdown: {
-    beforeTree: '',
-    afterTree: '<br/>',
-    indent: '  ',
-    masks: {
-      root: '# #1<br/>',
-      file: {
-        default: '[#1](.#2)'
-      },
-      directory: {
-        default: '[#1/](.#2)'
-      },
-    }
-  }
-};
+export interface TreeItemMask {
+  default: string;
+  first?: string;
+  last?: string;
+}
+export interface TreeConfig {
+  picker: vscode.QuickPickItem;
+  beforeTree?: string;
+  afterTree?: string;
+  indent: string;
+  basePath?: string;
+  masks: {
+    root: string;
+    file: TreeItemMask;
+    directory: TreeItemMask;
+  };
+  levelOffset?: number;
+}
 
 export function activate(ctx: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.fileTreeToText', async (startDir) => {
+    const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
+    const pickerItems = defaultConfig.map(el => el.picker);
     let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as Number;
     let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as String;
-    let selected = Object.values(AvailableFormats).find(el => el.label === defaultTarget);
+    let selected = pickerItems.find(el => el.label === defaultTarget);
     const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as Boolean;
 
     if (promptUser) {
-      selected = await vscode.window.showQuickPick(Object.values(AvailableFormats));
+      selected = await vscode.window.showQuickPick(pickerItems);
       const depth = await vscode.window.showInputBox({
         ignoreFocusOut: true,
         prompt: 'Select the max depth of the tree',
@@ -92,26 +50,17 @@ export function activate(ctx: vscode.ExtensionContext) {
     let tree = '';
 
     // ASCII Tree
-    if (selected && selected.label === AvailableFormats.ascii.label) {
-      // tree += `${path.basename(startDir.fsPath)}/<br/>${asciiTree(startDir.fsPath, 0, Number(maxDepth))}`;
-      const treeRef = new Tree(defaultConfig.ascii);
-      tree = treeRef.getTree(startDir.fsPath, 0, Number(maxDepth));
-    }
-
-    // LaTeX DirTree
-    if (selected && selected.label === AvailableFormats.latex.label) {
-      const treeRef = new Tree(defaultConfig.latex, 1, 2);
-      tree = treeRef.getTree(startDir.fsPath, 0, Number(maxDepth));
-    }
-
-    // Markdown Tree
-    if (selected && selected.label === AvailableFormats.markdown.label) {
-      const basePathBeforeSelection = path.dirname(startDir.fsPath);
-      const treeRef = new Tree({
-        ...defaultConfig.markdown,
-        basePath: basePathBeforeSelection
-      });
-      tree = treeRef.getTree(startDir.fsPath, 0, Number(maxDepth));
+    if (selected && selected.label) {
+      const searchLabel = selected.label;
+      const match = defaultConfig.find(el => el.picker.label === searchLabel);
+      if (match) {
+        const basePathBeforeSelection = path.dirname(startDir.fsPath);
+        const treeRef = new Tree({
+          ...match,
+          basePath: basePathBeforeSelection
+        });
+        tree = treeRef.getTree(startDir.fsPath, Number(maxDepth));
+      }
     }
 
     const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
@@ -129,67 +78,65 @@ export function activate(ctx: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-export interface TreeItemMask {
-  default: string;
-  first?: string;
-  last?: string;
-}
-export interface TreeConfig {
-  beforeTree?: string;
-  afterTree?: string;
-  indent: string;
-  basePath?: string;
-  masks: {
-    root: string;
-    file: TreeItemMask;
-    directory: TreeItemMask;
-  };
-}
-
+/**
+ * Create the class by handing over the tree configuration
+ */
 export class Tree {
-  constructor(
-    private config: TreeConfig,
-    public offsetRoot = 0,
-    public offsetOthers = 0
-  ) {
-    console.log(config);
-  }
+  private maxDepth: number | undefined;
 
+  /**
+   * Create the class by handing over the tree configuration
+   * @param config The configuration for tree creation
+   */
+  constructor(private config: TreeConfig) {}
+
+  /**
+   * Get the HTML output of the tree for a given path
+   * @param selectedRootPath The path the user choose for tree generation
+   * @param maxDepth The max depth of the generated tree.
+   */
   public getTree(
-    targetPath: string,
-    deps: number,
-    maxDepth: number
+    selectedRootPath: string,
+    maxDepth?: number
   ) {
-    return (this.config.beforeTree || '')
-      + this.convertElementToTargetFormat(
-        deps + this.offsetRoot,
-        path.basename(targetPath),
-        targetPath,
-        true,
-        true,
-        false,
-        true
-      )
+    this.maxDepth = maxDepth;
+    const beforeTree = (this.config.beforeTree || '');
+    const afterTree = (this.config.afterTree || '');
+    const rootElement = this.convertElementToTargetFormat(
+      this.config.levelOffset || 0,
+      path.basename(selectedRootPath),
+      selectedRootPath,
+      true,
+      true,
+      false,
+      true
+    );
+    return beforeTree
+      + rootElement
       + '<br/>'
-      + this.generateTree(targetPath, deps, maxDepth)
-      + (this.config.afterTree || '');
+      + this.generateTree(selectedRootPath, 0)
+      + afterTree;
   }
 
-  private generateTree(targetPath: string, deps: number, maxDepth?: number) {
+  /**
+   * Generate a tree or subtree for the given path and level
+   * @param selectedRootPath The root from which the tree or subtree should be
+   * generated
+   * @param level The level from which the tree should be generated
+   */
+  private generateTree(selectedRootPath: string, level: number) {
     let textOutput = '';
 
-    console.log('Check exists', fs.existsSync(targetPath), targetPath);
-
     // return if path to target is not valid
-    if (!fs.existsSync(targetPath)) { return ''; }
+    if (!fs.existsSync(selectedRootPath)) { return ''; }
 
     // order by directory > file
-    const beforSortFiles = fs.readdirSync(targetPath);
+    const beforSortFiles = fs.readdirSync(selectedRootPath);
     let paths: string[] = [];
 
     let tmp: string[] = [];
     beforSortFiles.forEach(el => {
-      const fullPath = path.join(targetPath, el.toString());
+      const fullPath = path.join(selectedRootPath, el.toString());
       if (fs.statSync(fullPath).isDirectory()) {
         paths.push(el);
       } else {
@@ -199,25 +146,23 @@ export class Tree {
     paths = paths.concat(tmp);
 
     paths.forEach(el => {
-      const fullPath = path.join(targetPath, el.toString());
+      const fullPath = path.join(selectedRootPath, el.toString());
       const lastItem = paths.indexOf(el) === paths.length - 1;
       const firstItem = paths.indexOf(el) === 0;
 
       // add directories
       const textEl = this.convertElementToTargetFormat(
-        deps + this.offsetOthers,
+        level + (this.config.levelOffset ? this.config.levelOffset + 1 : 0),
         el.toString(),
         fullPath,
         fs.statSync(fullPath).isDirectory(),
         firstItem,
         lastItem
       );
-      textOutput+= this.formatLevel(deps, textEl);
+      textOutput+= this.formatLevel(level, textEl);
       if (fs.statSync(fullPath).isDirectory()) {
-        if (!maxDepth) {
-          textOutput+= this.generateTree(fullPath, deps + 1);
-        } else if(deps !== maxDepth - 1) {
-          textOutput+= this.generateTree(fullPath, deps + 1, maxDepth);
+        if (!this.maxDepth || level !== this.maxDepth - 1) {
+          textOutput+= this.generateTree(fullPath, level + 1);
         }
       }
     });

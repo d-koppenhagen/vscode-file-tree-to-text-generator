@@ -78,6 +78,150 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Choose if the user will be promt or if the default settings will  be applied"
+        },
+        "tree-generator.targets": {
+          "type": "array",
+          "description": "Configure the output targets and adjust the configuration for tree items",
+          "items": {
+            "type": "object",
+            "title": "Format",
+            "properties": {
+              "picker": {
+                "type": "object",
+                "title": "Configure the prompt for the user",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "The short label for the target format"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description for the target format that will be displayed to the user"
+                  }
+                }
+              },
+              "beforeTree": {
+                "type": "string",
+                "description": "Define a text which will be added before the tree items"
+              },
+              "afterTree": {
+                "type": "string",
+                "description": "Define a text which will be added after the tree items"
+              },
+              "indent": {
+                "type": "string",
+                "description": "Set a string for indent per level of the tree"
+              },
+              "masks": {
+                "type": "object",
+                "title": "Configure the masks for tree items",
+                "properties": {
+                  "root": {
+                    "type": "string",
+                    "description": "The mask for the first (root) item"
+                  },
+                  "file": {
+                    "type": "object",
+                    "title": "Configure the masks for file tree items",
+                    "properties": {
+                      "default": {
+                        "type": "string",
+                        "description": "Set the default mask for files in the tree or subtree"
+                      },
+                      "first": {
+                        "type": "string",
+                        "description": "Set the mask for the first file in the tree or subtree"
+                      },
+                      "last": {
+                        "type": "string",
+                        "description": "Set the mask for the last file in the tree or subtree"
+                      }
+                    }
+                  },
+                  "directory": {
+                    "type": "object",
+                    "title": "Configure the masks for directory tree items",
+                    "properties": {
+                      "default": {
+                        "type": "string",
+                        "description": "Set the default mask for directories in the tree or subtree"
+                      },
+                      "first": {
+                        "type": "string",
+                        "description": "Set the mask for the first directory in the tree or subtree"
+                      },
+                      "last": {
+                        "type": "string",
+                        "description": "Set the mask for the last directory in the tree or subtree"
+                      }
+                    }
+                  }
+                }
+              },
+              "levelOffset": {
+                "type": "number",
+                "description": "Configure an option offset for increasing or decreasing the level index"
+              }
+            }
+          },
+          "default": [
+            {
+              "picker": {
+                "label": "ASCII",
+                "description": "Convert to ASCII Tree"
+              }, 
+              "beforeTree": "",
+              "afterTree": "",
+              "indent": "┃ ",
+              "masks": {
+                "root": "#1/",
+                "file": {
+                  "default": "┣ #1",
+                  "last": "┗ #1"
+                },
+                "directory": {
+                  "default": "┣ #1/"
+                }
+              }
+            },
+            {
+              "picker": {
+                "label": "LaTeX",
+                "description": "Convert to LaTeX (DirTree)"
+              },
+              "beforeTree": "\\dirtree{%<br/>",
+              "afterTree": "}",
+              "indent": "",
+              "masks": {
+                "root": "  . #0 #1/ .",
+                "file": {
+                  "default": "  . #0 #1 ."
+                },
+                "directory": {
+                  "default": "  . #0 #1/ ."
+                }
+              },
+              "levelOffset": 1
+            },
+            {
+              "picker": {
+                "label": "Markdown",
+                "description": "Convert to Markdown"
+              },
+              "beforeTree": "",
+              "afterTree": "<br/>",
+              "indent": "  ",
+              "masks": {
+                "root": "# #1<br/>",
+                "file": {
+                  "default": "[#1](.#2)"
+                },
+                "directory": {
+                  "default": "[#1/](.#2)"
+                }
+              }
+            }
+          ]
         }
 			}
 		}
