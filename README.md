@@ -53,6 +53,7 @@ This extension contributes the following settings:
 - Add the ability to specify some default values in the vscode configuration file
 - Add the ability to specify `preFileEntryString`, `postFileEntryString`, `preDirEntryString`, `postDirEntryString`, `preTreeString` and `postTreeString`, to let the user be able to customize the output
 - refactor the methods for the available output generation, so that they are more generic (reduce amount of duplicate code)
+- Add the ability to define custom tree generators
 
 ## Release Notes
 
