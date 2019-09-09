@@ -21,7 +21,6 @@ export interface TreeConfig {
     file: TreeItemMask;
     directory: TreeItemMask;
   };
-  levelOffset?: number;
 }
 
 export function activate(ctx: vscode.ExtensionContext) {
@@ -103,7 +102,7 @@ export class Tree {
     const beforeTree = (this.config.beforeTree || '');
     const afterTree = (this.config.afterTree || '');
     const rootElement = this.convertElementToTargetFormat(
-      this.config.levelOffset || 0,
+      1,
       path.basename(selectedRootPath),
       selectedRootPath,
       true,
@@ -152,7 +151,7 @@ export class Tree {
 
       // add directories
       const textEl = this.convertElementToTargetFormat(
-        level + (this.config.levelOffset ? this.config.levelOffset + 1 : 0),
+        level + 2,
         el.toString(),
         fullPath,
         fs.statSync(fullPath).isDirectory(),

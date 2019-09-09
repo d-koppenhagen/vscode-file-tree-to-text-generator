@@ -157,10 +157,6 @@
                     }
                   }
                 }
-              },
-              "levelOffset": {
-                "type": "number",
-                "description": "Configure an option offset for increasing or decreasing the level index"
               }
             }
           },
