@@ -177,7 +177,7 @@
               "picker": {
                 "label": "ASCII",
                 "description": "Convert to ASCII Tree"
-              }, 
+              },
               "beforeTree": "",
               "afterTree": "",
               "indent": "┃ ",
@@ -222,10 +222,10 @@
               "masks": {
                 "root": "# #1<br/>",
                 "file": {
-                  "default": "[#1](.#2)"
+                  "default": "* [#1](.#2)"
                 },
                 "directory": {
-                  "default": "[#1/](.#2)"
+                  "default": "* [#1/](.#2)"
                 }
               }
             }
