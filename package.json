@@ -92,24 +92,29 @@
                 "properties": {
                   "label": {
                     "type": "string",
+                    "title": "Prompt label for the target format",
                     "description": "The short label for the target format"
                   },
                   "description": {
                     "type": "string",
+                    "title": "Prompt description for the target format",
                     "description": "A description for the target format that will be displayed to the user"
                   }
                 }
               },
               "beforeTree": {
                 "type": "string",
-                "description": "Define a text which will be added before the tree items"
+                "title": "Text before the tree",
+                "description": "Define a text (HTML) which will be added before the tree items"
               },
               "afterTree": {
                 "type": "string",
-                "description": "Define a text which will be added after the tree items"
+                "title": "Text after the tree",
+                "description": "Define a text (HTML) which will be added after the tree items"
               },
               "indent": {
                 "type": "string",
+                "title": "Indentation",
                 "description": "Set a string for indent per level of the tree"
               },
               "masks": {
@@ -118,7 +123,8 @@
                 "properties": {
                   "root": {
                     "type": "string",
-                    "description": "The mask for the first (root) item"
+                    "title": "The mask for the first (root) item",
+                    "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                   },
                   "file": {
                     "type": "object",
@@ -126,15 +132,18 @@
                     "properties": {
                       "default": {
                         "type": "string",
-                        "description": "Set the default mask for files in the tree or subtree"
+                        "title": "Set the default mask for files in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       },
                       "first": {
                         "type": "string",
-                        "description": "Set the mask for the first file in the tree or subtree"
+                        "title": "Set the mask for the first file in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       },
                       "last": {
                         "type": "string",
-                        "description": "Set the mask for the last file in the tree or subtree"
+                        "title": "Set the mask for the last file in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       }
                     }
                   },
@@ -144,15 +153,18 @@
                     "properties": {
                       "default": {
                         "type": "string",
-                        "description": "Set the default mask for directories in the tree or subtree"
+                        "title": "Set the default mask for directories in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       },
                       "first": {
                         "type": "string",
-                        "description": "Set the mask for the first directory in the tree or subtree"
+                        "title": "Set the mask for the first directory in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       },
                       "last": {
                         "type": "string",
-                        "description": "Set the mask for the last directory in the tree or subtree"
+                        "title": "Set the mask for the last directory in the tree or subtree",
+                        "description": "Use the placeholders #0, #1 amd #2 which will be replaces as with the following content:\r\n #0 : Insert the tree level number\r\n #1 : Insert the name of the file or directory\r\n #2 : Insert the relative path to the file or directory starting from the selected directory\r\n Example: '#0: [#1](.#2)' becomes '1: [file1.txt](./path/to/file/file1.txt)'"
                       }
                     }
                   }
