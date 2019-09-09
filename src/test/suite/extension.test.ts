@@ -13,49 +13,69 @@ import * as path from 'path';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 // import * as vscode from 'vscode';
-import * as ext from '../../extension';
+import { Tree } from '../../extension';
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite('Extension Tests', () => {
+  let testTree: Tree;
+
   setup(() => {
-    const exampleFile = path.resolve(__dirname, 'tree/level1/level2/level3/file.txt');
-    fs.ensureFileSync(exampleFile); // create example dirTree
+    const filesAndDirs = [
+      'l0f1.txt',
+      'l0f2.txt',
+      'l0f3.txt',
+      'l1/l1f1.txt',
+      'l1/l1f2.txt',
+      'l1/l1f3.txt',
+      'l1/l2/l2f1.txt',
+      'l1/l2/l2f2.txt',
+      'l1/l2/l2f3.txt',
+      'l1/l2/l3/l4/l5/l5f1.txt',
+      'l1/l2/l2f4.txt',
+      'l0f4.txt',
+      'A/B/C/1',
+      'A/B/C/2',
+      'A/B/C/3'
+    ];
+
+    filesAndDirs.forEach(file => fs.ensureFileSync(path.resolve(__dirname, file)));
+
+    const gernericTreeConfig = {
+      picker: {
+        label: "Custom Tree",
+        description: "Convert to custom tree"
+      },
+      beforeTree: "BEFORETREE<br/>",
+      afterTree: "AFTERTREE",
+      indent: "┃ ",
+      masks: {
+        root: "# HEADING #0: #1 (#2)",
+        file: {
+          default: "+! #0: #1 (#2)",
+          first: "+: #0: #1 (#2)",
+          last: "+? #0: #1 (#2)"
+        },
+        directory: {
+          default: "#! #0: #1 (#2)/",
+          first: "#: #0: #1 (#2)/",
+          last: "#? #0: #1 (#2)/"
+        }
+      }
+    };
+    const basePathBeforeSelection = path.dirname(__dirname);
+    testTree = new Tree({
+      ...gernericTreeConfig,
+      basePath: basePathBeforeSelection
+    });
   });
 
-  /*
-  test('generate ascii tree', () => {
-    let result = ext.asciiTree(__dirname, 0);
-    assert.equal('┣ tree/<br>┃ ┗ level1/<br>┃ ┃ ┗ level2/<br>┃ ┃ ┃ ┗ level3/<br>┃ ┃ ┃ ┃ ┗ file.txt<br>┣ extension.test.js<br>┣ extension.test.js.map<br>┣ index.js<br>┗ index.js.map<br>', result);
+  test('generate a tree', () => {
+    let result = testTree.getTree(__dirname);
+    assert.equal('BEFORETREE<br/># HEADING 1: suite (/suite)<br/>#: 2: A (/suite/A)/<br/>┃ #? 3: B (/suite/A/B)/<br/>┃ ┃ #? 4: C (/suite/A/B/C)/<br/>┃ ┃ ┃ +: 5: 1 (/suite/A/B/C/1)<br/>┃ ┃ ┃ +! 5: 2 (/suite/A/B/C/2)<br/>┃ ┃ ┃ +? 5: 3 (/suite/A/B/C/3)<br/>#! 2: l1 (/suite/l1)/<br/>┃ #: 3: l2 (/suite/l1/l2)/<br/>┃ ┃ #: 4: l3 (/suite/l1/l2/l3)/<br/>┃ ┃ ┃ #? 5: l4 (/suite/l1/l2/l3/l4)/<br/>┃ ┃ ┃ ┃ #? 6: l5 (/suite/l1/l2/l3/l4/l5)/<br/>┃ ┃ ┃ ┃ ┃ +? 7: l5f1.txt (/suite/l1/l2/l3/l4/l5/l5f1.txt)<br/>┃ ┃ +! 4: l2f1.txt (/suite/l1/l2/l2f1.txt)<br/>┃ ┃ +! 4: l2f2.txt (/suite/l1/l2/l2f2.txt)<br/>┃ ┃ +! 4: l2f3.txt (/suite/l1/l2/l2f3.txt)<br/>┃ ┃ +? 4: l2f4.txt (/suite/l1/l2/l2f4.txt)<br/>┃ +! 3: l1f1.txt (/suite/l1/l1f1.txt)<br/>┃ +! 3: l1f2.txt (/suite/l1/l1f2.txt)<br/>┃ +? 3: l1f3.txt (/suite/l1/l1f3.txt)<br/>+! 2: extension.test.js (/suite/extension.test.js)<br/>+! 2: extension.test.js.map (/suite/extension.test.js.map)<br/>+! 2: index.js (/suite/index.js)<br/>+! 2: index.js.map (/suite/index.js.map)<br/>+! 2: l0f1.txt (/suite/l0f1.txt)<br/>+! 2: l0f2.txt (/suite/l0f2.txt)<br/>+! 2: l0f3.txt (/suite/l0f3.txt)<br/>+? 2: l0f4.txt (/suite/l0f4.txt)<br/>AFTERTREE', result);
   });
 
-  test('generate ascii tree limited to level 2', () => {
-    let result = ext.asciiTree(__dirname, 0, 1);
-    assert.equal('┣ tree/<br>┣ extension.test.js<br>┣ extension.test.js.map<br>┣ index.js<br>┗ index.js.map<br>', result);
+  test('generate a tree with maxDepth', () => {
+    let result = testTree.getTree(__dirname, 2);
+    assert.equal('BEFORETREE<br/># HEADING 1: suite (/suite)<br/>#: 2: A (/suite/A)/<br/>┃ #? 3: B (/suite/A/B)/<br/>#! 2: l1 (/suite/l1)/<br/>┃ #: 3: l2 (/suite/l1/l2)/<br/>┃ +! 3: l1f1.txt (/suite/l1/l1f1.txt)<br/>┃ +! 3: l1f2.txt (/suite/l1/l1f2.txt)<br/>┃ +? 3: l1f3.txt (/suite/l1/l1f3.txt)<br/>+! 2: extension.test.js (/suite/extension.test.js)<br/>+! 2: extension.test.js.map (/suite/extension.test.js.map)<br/>+! 2: index.js (/suite/index.js)<br/>+! 2: index.js.map (/suite/index.js.map)<br/>+! 2: l0f1.txt (/suite/l0f1.txt)<br/>+! 2: l0f2.txt (/suite/l0f2.txt)<br/>+! 2: l0f3.txt (/suite/l0f3.txt)<br/>+? 2: l0f4.txt (/suite/l0f4.txt)<br/>AFTERTREE', result);
   });
-
-  test('generate latex tree', () => {
-    let result = ext.latexTree(__dirname, 0);
-    assert.equal('  .2 tree/ .<br>  .3 level1/ .<br>  .4 level2/ .<br>  .5 level3/ .<br>  .6 file.txt .<br>  .2 extension.test.js .<br>  .2 extension.test.js.map .<br>  .2 index.js .<br>  .2 index.js.map .<br>', result);
-  });
-
-  test('generate latex tree limited to level 2', () => {
-    let result = ext.latexTree(__dirname, 0, 1);
-    assert.equal('  .2 tree/ .<br>  .2 extension.test.js .<br>  .2 extension.test.js.map .<br>  .2 index.js .<br>  .2 index.js.map .<br>', result);
-  });
-
-  test('generate markdown tree', () => {
-    let result = ext.markdownTree(__dirname, 0);
-    assert.equal(`* [tree/](.${__dirname}/tree)<br>  * [level1/](.${__dirname}/tree/level1)<br>    * [level2/](.${__dirname}/tree/level1/level2)<br>      * [level3/](.${__dirname}/tree/level1/level2/level3)<br>        * [file.txt](.${__dirname}/tree/level1/level2/level3/file.txt)<br>* [extension.test.js](.${__dirname}/extension.test.js)<br>* [extension.test.js.map](.${__dirname}/extension.test.js.map)<br>* [index.js](.${__dirname}/index.js)<br>* [index.js.map](.${__dirname}/index.js.map)<br>`, result);
-  });
-
-  test('generate markdown tree limited to level 2', () => {
-    let result = ext.markdownTree(__dirname, 0, 1);
-    assert.equal(`* [tree/](.${__dirname}/tree)<br>* [extension.test.js](.${__dirname}/extension.test.js)<br>* [extension.test.js.map](.${__dirname}/extension.test.js.map)<br>* [index.js](.${__dirname}/index.js)<br>* [index.js.map](.${__dirname}/index.js.map)<br>`, result);
-  });
-
-  test('format an enty', () => {
-    let result = ext.format(3, 'ABCD', 'testEl', '*+#');
-    assert.equal('*+#*+#*+#ABCDtestEl<br>', result);
-  });
-  */
 });

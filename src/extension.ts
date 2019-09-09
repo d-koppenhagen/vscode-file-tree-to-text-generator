@@ -11,7 +11,7 @@ import * as path from 'path';
  * #0 : Insert the tree level number
  * #1 : Insert the name of the file or directory
  * #2 : Insert the relative path to the file or directory starting from the selected directory
- * @example 
+ * @example
  * - #0: [#1](.#2)
  * - 1: [file1.txt](./path/to/file/file1.txt)
  */
@@ -68,7 +68,9 @@ export function activate(ctx: vscode.ExtensionContext) {
         prompt: 'Select the max depth of the tree',
         value: maxDepth.toString(),
         validateInput(value) {
-          return (Number(value) && Number(value) > 0 || !value) ? null : 'Please enter a valid number greater then 0 or leave the input empty';
+          return (Number(value) && Number(value) > 0 || !value)
+            ? null
+            : 'Please enter a valid number greater then 0 or leave the input empty';
         }
       });
       maxDepth = Number(depth);
@@ -201,11 +203,11 @@ export class Tree {
 
   /**
    * It will indent the element to the correct level
-   * @param level the level of the element 
+   * @param level the level of the element
    * @param name the elements text
    */
   private formatLevel(level: number, name: string) {
-    return `${Array(level + 1).join(this.config.indent)}${name}<br>`;
+    return `${Array(level + 1).join(this.config.indent)}${name}<br/>`;
   }
 
   /**
@@ -237,15 +239,15 @@ export class Tree {
     const maskConfig = isDirectory
       ? this.config.masks.directory
       : this.config.masks.file;
-    
+
     // determine the correct mask from config
     let mask = '';
     if (this.config.masks.root && isRoot) {
       mask = this.config.masks.root;
-    } else if (maskConfig.first && isFirst) {
-      mask = maskConfig.first;
     } else if (maskConfig.last && isLast) {
       mask = maskConfig.last;
+    } else if (maskConfig.first && isFirst) {
+      mask = maskConfig.first;
     } else {
       mask = maskConfig.default;
     }
