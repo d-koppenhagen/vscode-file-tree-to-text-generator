@@ -2,6 +2,52 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
+## [1.0.0] - 2019-09-10
+
+### New
+
+- Refactored logic for tree generation
+- Adds the possibility to configure custom tree generators by adding them to the configuration array in `tree-generator.targets`
+- Adds the possibility to modify defualt generator settings / output by adjusting the configuration array in `tree-generator.targets`
+
+_Example:_
+
+```js
+/**
+ * Configure the masks for tree items
+ * Use the placeholders #0, #1 amd #2 which will be replaces as with the
+ * following content:
+ * #0 : Insert the tree level number
+ * #1 : Insert the name of the file or directory
+ * #2 : Insert the relative path to the file or directory starting from the selected directory
+ * @example
+ * - #0: [#1](.#2)
+ * - 1: [file1.txt](./path/to/file/file1.txt)
+ */
+"tree-generator.targets": [
+  {
+      "picker": {
+          "label": "ASCII",
+          "description": "Convert to ASCII Tree"
+      },
+      "beforeTree": "",
+      "afterTree": "",
+      "indent": "┃ ",
+      "masks": {
+          "root": "#1/",
+          "file": {
+              "default": "┣ #1",
+              "last": "┗ #1"
+          },
+          "directory": {
+              "default": "┣ #1/"
+          }
+      }
+  }
+  // ...
+]
+```
+
 ## [0.3.0] - 2019-09-06
 
 ### New

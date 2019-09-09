@@ -27,33 +27,55 @@ See how easy it is:
 
 ![File-Tree-To-Text Demo GIF](./images/file-tree-to-text.gif)
 
-### Configuration
+## Extension Settings
 
 You can easily set default values and even disable the promt.
 
 ![File-Tree-To-Text Configuration](./images/file-tree-to-text-config.png)
 
-## Extension Settings
+### Define custom generators or modify defaults
 
-In the current version, no extension settings can be configured. You will be prompt for necessary information.
+You can define custom generators or modify the default outputs by adjusting the configuration in you `settings.json` file.
+The place for that is the `tree-generator.targets` array.
 
-<!---
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The `masks` property defines the main style for different kinds of entries (directories, files).
+All props in `masks` will can use placeholders which will be replaces by the generator with the following contents:
 
-For example:
+- `#0` : Insert the tree level number (e.g. "2")
+- `#1` : Insert the name of the file or directory (e.g. "myFile.txt" or "myDirectory")
+- `#2` : Insert the relative path to the file or directory starting from the selected directory (e.g. "/src/someFile.txt" or "/src/someDirectory")
 
-This extension contributes the following settings:
+As an example the mask `#0: [#1](.#2)` will lead into `1: [file1.txt](./path/to/file/file1.txt)`.
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
--->
+```json
+"tree-generator.targets": [
+  {
+      "picker": {
+          "label": "ASCII",
+          "description": "Convert to ASCII Tree"
+      },
+      "beforeTree": "",
+      "afterTree": "",
+      "indent": "┃ ",
+      "masks": {
+          "root": "#1/",
+          "file": {
+              "default": "┣ #1",
+              "last": "┗ #1"
+          },
+          "directory": {
+              "default": "┣ #1/"
+          }
+      }
+  }
+  // ...
+]
+```
 
 ## Known Issues and Improvements
 
-- Add the ability to specify some default values in the vscode configuration file
-- Add the ability to specify `preFileEntryString`, `postFileEntryString`, `preDirEntryString`, `postDirEntryString`, `preTreeString` and `postTreeString`, to let the user be able to customize the output
-- refactor the methods for the available output generation, so that they are more generic (reduce amount of duplicate code)
-- Add the ability to define custom tree generators
+- Add a `dirsOnly` flag, to skip files
+- Add a `maxFilesPerSubtree` flag and a string configuration for e.g. `...` as last subTree item
 
 ## Release Notes
 
