@@ -4,27 +4,55 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-type SupportedFormats = 'ascii' | 'latex' | 'markdown';
+/**
+ * Configure the masks for tree items
+ * Use the placeholders #0, #1 amd #2 which will be replaces as with the
+ * following content:
+ * #0 : Insert the tree level number
+ * #1 : Insert the name of the file or directory
+ * #2 : Insert the relative path to the file or directory starting from the selected directory
+ * @example 
+ * - #0: [#1](.#2)
+ * - 1: [file1.txt](./path/to/file/file1.txt)
+ */
 export interface TreeItemMask {
+  /** Set the default mask for the tree or subtree  */
   default: string;
+  /** Set the mask for the first item in a tree or subtree  */
   first?: string;
+  /** Set the mask for the last item in a tree or subtree  */
   last?: string;
 }
+
+/**
+ * This interface describes the tree configuration and it matches with the
+ * settings defined in the `settings.json` file
+ */
 export interface TreeConfig {
+  /** The QuickPicker configuration for the user prompt */
   picker: vscode.QuickPickItem;
+  /** Define a text (HTML) which will be added before the tree items */
   beforeTree?: string;
+  /** Define a text (HTML) which will be added after the tree items */
   afterTree?: string;
+  /** Set a string for indent per level of the tree */
   indent: string;
+  /** Set a string of the basepath wich will be cut from the full path */
   basePath?: string;
+  /** Configure the masks for tree items */
   masks: {
+    /** The mask for the first (root) item */
     root: string;
+    /** Configure the masks for file tree items */
     file: TreeItemMask;
+    /** Configure the masks for directory tree items */
     directory: TreeItemMask;
   };
 }
 
 export function activate(ctx: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.fileTreeToText', async (startDir) => {
+    // get configuration from `settings.json`
     const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
     const pickerItems = defaultConfig.map(el => el.picker);
     let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as Number;
@@ -32,6 +60,7 @@ export function activate(ctx: vscode.ExtensionContext) {
     let selected = pickerItems.find(el => el.label === defaultTarget);
     const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as Boolean;
 
+    // handle user prompt interaction
     if (promptUser) {
       selected = await vscode.window.showQuickPick(pickerItems);
       const depth = await vscode.window.showInputBox({
@@ -62,13 +91,15 @@ export function activate(ctx: vscode.ExtensionContext) {
       }
     }
 
+    // initialize new web tab
     const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
       'text',
       `${selected ? selected.label : ''} File Tree`,
       { viewColumn: vscode.ViewColumn.Active },
       { enableScripts: true }
     );
-    // rerplace the target placeholder with the generated tree
+
+    // replace the target placeholder with the generated tree
     vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
 
     ctx.subscriptions.push(disposable);
@@ -227,6 +258,9 @@ export class Tree {
   }
 }
 
+/**
+ * defines the HTML template for the tab in which the tree result is inserted
+ */
 const baseTemplate = `
 <!DOCTYPE html>
   <head>
