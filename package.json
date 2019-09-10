@@ -42,7 +42,7 @@
 		"commands": [
 			{
 				"command": "extension.fileTreeToText",
-				"title": "File Tree To Text"
+				"title": "Generate Filetree..."
 			}
 		],
 		"menus": {
@@ -57,7 +57,7 @@
     "configuration": {
 			"id": "tree-generator",
 			"type": "object",
-			"title": "File Tree To Text Generator configuration",
+			"title": "File Tree To Text Generator",
 			"properties": {
 				"tree-generator.defaultDepth": {
 					"type": "integer",
@@ -72,7 +72,7 @@
             "Markdown"
           ],
 					"default": "ASCII",
-					"description": "Set your default output format"
+					"description": "Set your default output format. It is just respected if prompt is disabled."
         },
         "tree-generator.prompt": {
 					"type": "boolean",

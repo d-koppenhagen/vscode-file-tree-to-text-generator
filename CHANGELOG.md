@@ -6,7 +6,6 @@ All notable changes to the "file-tree-to-text-generator" extension will be docum
 
 ### New
 
-- Refactored logic for tree generation
 - Adds the possibility to configure custom tree generators by adding them to the configuration array in `tree-generator.targets`
 - Adds the possibility to modify defualt generator settings / output by adjusting the configuration array in `tree-generator.targets`
 
@@ -47,6 +46,12 @@ _Example:_
   // ...
 ]
 ```
+
+### Changes
+
+- Renamed generator button from `File Tree To Text` to `Generate Filetree...`
+- Refactored logic for tree generation
+- Updates Docs
 
 ## [0.3.0] - 2019-09-06
 

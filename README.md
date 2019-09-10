@@ -5,29 +5,27 @@
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
 This extension will allow you to generate file / directory trees for different target formats.
-Currently supported are:
+Currently there are three supported default formats:
 
 - Markdown
 - LaTeX (DirTree)
 - ASCII
 
-[GitHub](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator)
+If this formats doesn't fit your needs, you can customize them by adjusting the `settings.json` or by adding new formats.
 
-## How to use
+## Features
+
+### Basic usage
 
 1. Install the extension
-1. Right click on a directory inside the vscode file explorer and choose ("File Tree To Text")
+1. Right click on a directory inside the vscode file explorer and choose ("Generate Filetree...")
 1. Choose your target format from the prompt
 1. Choose the max depth or leave the output empty to get the whole tree from the choosen directory
 1. The target code willl be generated and displayed in new tab now
 
-## Features
-
-See how easy it is:
-
 ![File-Tree-To-Text Demo GIF](./images/file-tree-to-text.gif)
 
-## Extension Settings
+### Configure via Extension Settings
 
 You can easily set default values and even disable the promt.
 
@@ -37,6 +35,8 @@ You can easily set default values and even disable the promt.
 
 You can define custom generators or modify the default outputs by adjusting the configuration in you `settings.json` file.
 The place for that is the `tree-generator.targets` array.
+
+![File-Tree-To-Text Adjust Targets](./images/file-tree-to-text-adjust-target.gif)
 
 The `masks` property defines the main style for different kinds of entries (directories, files).
 All props in `masks` will can use placeholders which will be replaces by the generator with the following contents:
@@ -49,28 +49,29 @@ As an example the mask `#0: [#1](.#2)` will lead into `1: [file1.txt](./path/to/
 
 ```json
 "tree-generator.targets": [
+  // ...
   {
       "picker": {
-          "label": "ASCII",
-          "description": "Convert to ASCII Tree"
+          "label": "Markdown (Heading Style)",
+          "description": "Convert to Markdown with files and directories as headings"
       },
       "beforeTree": "",
-      "afterTree": "",
-      "indent": "┃ ",
+      "afterTree": "<br/>",
+      "indent": "#",
       "masks": {
-          "root": "#1/",
+          "root": "# #1<br/><br/>[#1](.#2)<br/>",
           "file": {
-              "default": "┣ #1",
-              "last": "┗ #1"
+              "default": "# #1<br/><br/>[#1](.#2)<br/>"
           },
           "directory": {
-              "default": "┣ #1/"
+              "default": "# #1<br/><br/>[#1](.#2)<br/>"
           }
       }
   }
-  // ...
 ]
 ```
+
+![File-Tree-To-Text Add Custom Targets](./images/file-tree-to-text-custom-target.gif)
 
 ## Known Issues and Improvements
 
