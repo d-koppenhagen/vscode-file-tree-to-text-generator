@@ -314,23 +314,6 @@ const baseTemplate = `
   </head>
 
   <body>
-    <!--<form class="form">
-      <label>Icons:</label>
-      <fieldset class="icons" id="icons">
-        <input type="radio" id="icons-on" name="Icons on" value="true">
-        <label for="icons-on"> Icons on</label>
-        <input type="radio" id="icons-off" name="Icons off" value="false">
-        <label for="icons-off"> Icons off</label>
-      </fieldset>
-
-      <label>Output format:</label>
-      <fieldset class="output-format">
-        <select name="format" id="format" size="5">
-          <option value="ascii">ASCII</option>
-          <option value="latex">LaTeX (DirTree)</option>
-        </select>
-      </fieldset>
-    </form>-->
     <form class="actions">
       <button class="action-btn"
               tabindex="0" role="button"
@@ -338,7 +321,6 @@ const baseTemplate = `
         Copy to clipboard
       </button>
     </form>
-
     <pre id="tree-output">###TEXTTOREPLACE###</pre>
   </body>
 
