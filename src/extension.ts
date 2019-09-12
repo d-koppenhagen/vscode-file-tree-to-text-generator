@@ -48,6 +48,8 @@ export interface TreeConfig {
     /** Configure the masks for directory tree items */
     directory: TreeItemMask;
   };
+  /** Ignore files and just print dirs */
+  dirsOnly?: boolean;
 }
 
 export function activate(ctx: vscode.ExtensionContext) {
@@ -55,10 +57,11 @@ export function activate(ctx: vscode.ExtensionContext) {
     // get configuration from `settings.json`
     const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
     const pickerItems = defaultConfig.map(el => el.picker);
-    let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as Number;
-    let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as String;
+    let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as number;
+    let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as string;
     let selected = pickerItems.find(el => el.label === defaultTarget);
-    const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as Boolean;
+    const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as boolean;
+    const dirsOnly = vscode.workspace.getConfiguration().get('tree-generator.dirsOnly') as boolean;
 
     // handle user prompt interaction
     if (promptUser) {
@@ -87,7 +90,8 @@ export function activate(ctx: vscode.ExtensionContext) {
         const basePathBeforeSelection = path.dirname(startDir.fsPath);
         const treeRef = new Tree({
           ...match,
-          basePath: basePathBeforeSelection
+          basePath: basePathBeforeSelection,
+          dirsOnly
         });
         tree = treeRef.getTree(startDir.fsPath, Number(maxDepth));
       }
@@ -172,7 +176,9 @@ export class Tree {
       if (fs.statSync(fullPath).isDirectory()) {
         pathsArray.push(el);
       } else {
-        filesArray.push(el);
+        if (!this.config.dirsOnly) {
+          filesArray.push(el);
+        }
       }
     });
     const pathsAndFilesArray = [...pathsArray, ...filesArray];

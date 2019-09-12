@@ -62,7 +62,8 @@
 				"tree-generator.defaultDepth": {
 					"type": "integer",
 					"default": 5,
-					"description": "Default max depth of the generated tree"
+					"title": "Depth",
+					"description": "Set the default max depth of the generated tree"
         },
         "tree-generator.defaultTarget": {
           "type": "string",
@@ -72,23 +73,34 @@
             "Markdown"
           ],
 					"default": "ASCII",
-					"description": "Set your default output format. It is just respected if prompt is disabled."
+					"title": "Default Target",
+					"description": "Set your default output traget. It is just respected if prompt is disabled."
         },
         "tree-generator.prompt": {
 					"type": "boolean",
 					"default": true,
+					"title": "Prompt",
 					"description": "Choose if the user will be promt or if the default settings will  be applied"
+        },
+        "tree-generator.dirsOnly": {
+					"type": "boolean",
+					"default": false,
+					"title": "Only directories",
+					"description": "Define if only directories will be part of the result"
         },
         "tree-generator.targets": {
           "type": "array",
+          "title": "Customize target formats",
           "description": "Configure the output targets and adjust the configuration for tree items",
           "items": {
             "type": "object",
             "title": "Format",
+            "description": "Define the format for the generated tree",
             "properties": {
               "picker": {
                 "type": "object",
-                "title": "Configure the prompt for the user",
+                "title": "Prompt configuration",
+                "description": "Configure the prompt for the user",
                 "properties": {
                   "label": {
                     "type": "string",
@@ -119,7 +131,8 @@
               },
               "masks": {
                 "type": "object",
-                "title": "Configure the masks for tree items",
+                "title": "Masks configuration",
+                "description": "Configure the masks for tree items",
                 "properties": {
                   "root": {
                     "type": "string",
@@ -128,7 +141,8 @@
                   },
                   "file": {
                     "type": "object",
-                    "title": "Configure the masks for file tree items",
+                    "title": "Masks for file tree items",
+                    "description": "Configure the masks for file tree items",
                     "properties": {
                       "default": {
                         "type": "string",
@@ -149,7 +163,8 @@
                   },
                   "directory": {
                     "type": "object",
-                    "title": "Configure the masks for directory tree items",
+                    "title": "Masks for directory tree items",
+                    "description": "Configure the masks for directory tree items",
                     "properties": {
                       "default": {
                         "type": "string",

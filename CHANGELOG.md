@@ -2,6 +2,16 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
+## [1.1.0] - 2019-09-12
+
+### New
+
+- adds `tree-generator.dirsOnly` configuration switch to be able to define that just directories should be used for the generated output (ignore files)
+
+### Changes
+
+- updates the docs
+
 ## [1.0.1] - 2019-09-12
 
 ## bug fixes

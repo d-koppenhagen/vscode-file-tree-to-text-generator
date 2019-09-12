@@ -31,6 +31,14 @@ You can easily set default values and even disable the promt.
 
 ![File-Tree-To-Text Configuration](./images/file-tree-to-text-config.png)
 
+currently available configuration options are:
+
+- Set a default value for the max tree depth
+- Define a default traget for the output. This can be use in combination with the option `tree-generator.prompt` to directly generate an output.
+- Use only directories for the output and do not include files
+- Promt for options when generationg the tree
+- Configure amd adjust the target formats
+
 ### Define custom generators or modify defaults
 
 You can define custom generators or modify the default outputs by adjusting the configuration in you `settings.json` file.
@@ -75,7 +83,6 @@ As an example the mask `#0: [#1](.#2)` will lead into `1: [file1.txt](./path/to/
 
 ## Known Issues and Improvements
 
-- Add a `dirsOnly` flag, to skip files
 - Add a `maxFilesPerSubtree` flag and a string configuration for e.g. `...` as last subTree item
 
 ## Release Notes
