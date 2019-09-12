@@ -164,23 +164,23 @@ export class Tree {
 
     // order by directory > file
     const beforSortFiles = fs.readdirSync(selectedRootPath);
-    let paths: string[] = [];
+    let pathsArray: string[] = [];
 
-    let tmp: string[] = [];
+    let filesArray: string[] = [];
     beforSortFiles.forEach(el => {
       const fullPath = path.join(selectedRootPath, el.toString());
       if (fs.statSync(fullPath).isDirectory()) {
-        paths.push(el);
+        pathsArray.push(el);
       } else {
-        tmp.push(el);
+        filesArray.push(el);
       }
     });
-    paths = paths.concat(tmp);
+    const pathsAndFilesArray = [...pathsArray, ...filesArray];
 
-    paths.forEach(el => {
+    pathsAndFilesArray.forEach(el => {
       const fullPath = path.join(selectedRootPath, el.toString());
-      const lastItem = paths.indexOf(el) === paths.length - 1;
-      const firstItem = paths.indexOf(el) === 0;
+      const lastItem = pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
+      const firstItem = pathsAndFilesArray.indexOf(el) === 0;
 
       // add directories
       const textEl = this.convertElementToTargetFormat(

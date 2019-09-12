@@ -188,7 +188,8 @@
                   "last": "┗ #1"
                 },
                 "directory": {
-                  "default": "┣ #1/"
+                  "default": "┣ #1/",
+                  "last": "┗ #1/"
                 }
               }
             },

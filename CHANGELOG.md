@@ -2,6 +2,12 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
+## [1.0.1] - 2019-09-12
+
+## bug fixes
+
+- configuration for last directories in a tree was not respected (e.g. `"directory": { "default": "┣ #1/" , "last": "┗ #1/" }` produced `┣ <DIRECTORY>/` for all directories including the last one with the default ASCII configuration
+
 ## [1.0.0] - 2019-09-10
 
 ### New
