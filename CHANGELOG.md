@@ -2,6 +2,12 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
+## [1.2.0] - 2019-09-17
+
+### New
+
+- adds `tree-generator.maxFilesInSubtree` and `tree-generator.maxDirsInSubtree` configuration to limit the files / directories in each subtree
+
 ## [1.1.0] - 2019-09-12
 
 ### New

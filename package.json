@@ -2,7 +2,7 @@
 	"name": "file-tree-to-text-generator",
 	"displayName": "file-tree-to-text-generator",
 	"description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator.git"
@@ -64,6 +64,18 @@
 					"default": 5,
 					"title": "Depth",
 					"description": "Set the default max depth of the generated tree"
+        },
+        "tree-generator.maxFilesInSubtree": {
+					"type": "integer",
+					"default": 0,
+					"title": "Max. files per in tree / subtree",
+					"description": "Set a max. value for the amount of files in a tree or subtree. Set this to 0 equals no limitation"
+        },
+        "tree-generator.maxDirsInSubtree": {
+					"type": "integer",
+					"default": 0,
+					"title": "Max. directories per in tree / subtree",
+					"description": "Set a max. value for the amount of directories in a tree or subtree. Set this to 0 equals no limitation"
         },
         "tree-generator.defaultTarget": {
           "type": "string",

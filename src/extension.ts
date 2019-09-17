@@ -58,6 +58,8 @@ export function activate(ctx: vscode.ExtensionContext) {
     const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
     const pickerItems = defaultConfig.map(el => el.picker);
     let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as number;
+    const maxFilesPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxFilesInSubtree') as number;
+    const maxDirsPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxDirsInSubtree') as number;
     let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as string;
     let selected = pickerItems.find(el => el.label === defaultTarget);
     const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as boolean;
@@ -93,7 +95,12 @@ export function activate(ctx: vscode.ExtensionContext) {
           basePath: basePathBeforeSelection,
           dirsOnly
         });
-        tree = treeRef.getTree(startDir.fsPath, Number(maxDepth));
+        tree = treeRef.getTree(
+          startDir.fsPath,
+          Number(maxDepth),
+          Number(maxFilesPerSubtree),
+          Number(maxDirsPerSubtree)
+        );
       }
     }
 
@@ -118,7 +125,18 @@ export function deactivate() {}
  * Create the class by handing over the tree configuration
  */
 export class Tree {
+  /**
+   * limit the depth of the tree
+   */
   private maxDepth: number | undefined;
+  /**
+   * limit the amaount of directories in  a subtree
+   */
+  private maxDirsPerSubtree: number | undefined;
+  /**
+   * limit the amaount of files in  a subtree
+   */
+  private maxFilesInSubtree: number | undefined;
 
   /**
    * Create the class by handing over the tree configuration
@@ -133,9 +151,13 @@ export class Tree {
    */
   public getTree(
     selectedRootPath: string,
-    maxDepth?: number
+    maxDepth?: number,
+    maxFilesInSubtree?: number,
+    maxDirsPerSubtree?: number
   ) {
     this.maxDepth = maxDepth;
+    this.maxDirsPerSubtree = maxDirsPerSubtree;
+    this.maxFilesInSubtree = maxFilesInSubtree;
     const beforeTree = (this.config.beforeTree || '');
     const afterTree = (this.config.afterTree || '');
     const rootElement = this.convertElementToTargetFormat(
@@ -168,40 +190,56 @@ export class Tree {
 
     // order by directory > file
     const beforSortFiles = fs.readdirSync(selectedRootPath);
-    let pathsArray: string[] = [];
+    let dirsArray: string[] = [];
 
     let filesArray: string[] = [];
     beforSortFiles.forEach(el => {
       const fullPath = path.join(selectedRootPath, el.toString());
       if (fs.statSync(fullPath).isDirectory()) {
-        pathsArray.push(el);
+        dirsArray.push(el);
       } else {
         if (!this.config.dirsOnly) {
           filesArray.push(el);
         }
       }
     });
-    const pathsAndFilesArray = [...pathsArray, ...filesArray];
+
+    const maxReachedString = '...';
+    const countDirsInSubtree = dirsArray.length;
+    if (this.maxDirsPerSubtree && countDirsInSubtree > this.maxDirsPerSubtree) {
+      dirsArray = dirsArray.slice(0, this.maxDirsPerSubtree);
+      dirsArray.push(maxReachedString);
+    }
+
+    const countFilesInSubtree = filesArray.length;
+    if (this.maxFilesInSubtree && countFilesInSubtree > this.maxFilesInSubtree) {
+      filesArray = filesArray.slice(0, this.maxFilesInSubtree);
+      filesArray.push(maxReachedString);
+    }
+
+    const pathsAndFilesArray = [...dirsArray, ...filesArray];
 
     pathsAndFilesArray.forEach(el => {
-      const fullPath = path.join(selectedRootPath, el.toString());
-      const lastItem = pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
-      const firstItem = pathsAndFilesArray.indexOf(el) === 0;
+      const isLimitPlaceholder = el === maxReachedString;
+
+      const elText = isLimitPlaceholder ? maxReachedString : el.toString();
+      const fullPath = isLimitPlaceholder ? maxReachedString : path.join(selectedRootPath, el.toString());
+      const lastItem = isLimitPlaceholder ? true : pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
+      const firstItem = isLimitPlaceholder ? false : pathsAndFilesArray.indexOf(el) === 0;
+      const isDirectory = isLimitPlaceholder ? false : fs.statSync(fullPath).isDirectory();
 
       // add directories
       const textEl = this.convertElementToTargetFormat(
         level + 2,
-        el.toString(),
+        elText,
         fullPath,
-        fs.statSync(fullPath).isDirectory(),
+        isDirectory,
         firstItem,
         lastItem
       );
       textOutput+= this.formatLevel(level, textEl);
-      if (fs.statSync(fullPath).isDirectory()) {
-        if (!this.maxDepth || level !== this.maxDepth - 1) {
-          textOutput+= this.generateTree(fullPath, level + 1);
-        }
+      if (isDirectory && (!this.maxDepth || level !== this.maxDepth - 1)) {
+        textOutput+= this.generateTree(fullPath, level + 1);
       }
     });
     return textOutput;

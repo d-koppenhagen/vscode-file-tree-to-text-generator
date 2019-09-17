@@ -38,6 +38,7 @@ currently available configuration options are:
 - Use only directories for the output and do not include files
 - Promt for options when generationg the tree
 - Configure amd adjust the target formats
+- limit the amount of files and/or directories in each subtree
 
 ### Define custom generators or modify defaults
 
@@ -80,10 +81,6 @@ As an example the mask `#0: [#1](.#2)` will lead into `1: [file1.txt](./path/to/
 ```
 
 ![File-Tree-To-Text Add Custom Targets](./images/file-tree-to-text-custom-target.gif)
-
-## Known Issues and Improvements
-
-- Add a `maxFilesPerSubtree` flag and a string configuration for e.g. `...` as last subTree item
 
 ## Release Notes
 
