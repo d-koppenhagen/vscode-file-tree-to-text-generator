@@ -2,6 +2,12 @@
 
 All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
 
+## [1.2.1] - 2019-09-18
+
+### Changes
+
+- adjusts the docs
+
 ## [1.2.0] - 2019-09-17
 
 ### New

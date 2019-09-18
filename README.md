@@ -40,6 +40,13 @@ currently available configuration options are:
 - Configure amd adjust the target formats
 - limit the amount of files and/or directories in each subtree
 
+### Configure a max. amount of files and / or directories for each subtree
+
+You can define the max. amount of files and directories via vscode settings (`tree-generator.maxFilesInSubtree` and `tree-generator.maxDirsInSubtree`).
+If there are more files or directories as defined, they will be replaced by an `...` entry. Setting the values to `0` means that there is no limit set.
+
+![File-Tree-To-Text max files and / or directories configuration](./images/file-tree-to-text-max-files.gif)
+
 ### Define custom generators or modify defaults
 
 You can define custom generators or modify the default outputs by adjusting the configuration in you `settings.json` file.
