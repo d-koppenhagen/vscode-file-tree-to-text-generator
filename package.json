@@ -1,81 +1,81 @@
 {
-	"name": "file-tree-to-text-generator",
-	"displayName": "file-tree-to-text-generator",
-	"description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
-	"version": "1.2.1",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator.git"
-	},
-	"author": {
-		"name": "Danny Koppenhagen",
-		"email": "mail@d-koppenhagen.de",
-		"url": "http://d-koppenhagen.de"
-	},
-	"engines": {
-		"vscode": "^1.37.0"
-	},
+  "name": "file-tree-to-text-generator",
+  "displayName": "file-tree-to-text-generator",
+  "description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
+  "version": "1.2.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator.git"
+  },
+  "author": {
+    "name": "Danny Koppenhagen",
+    "email": "mail@d-koppenhagen.de",
+    "url": "http://d-koppenhagen.de"
+  },
+  "engines": {
+    "vscode": "^1.37.0"
+  },
   "icon": "images/icon.png",
   "galleryBanner": {
-		"color": "beige",
-		"theme": "light"
-	},
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"markdown",
-		"ascii",
-		"asciitree",
-		"latex",
-		"tex",
-		"dirtree",
-		"tree",
-		"filetree",
-		"dirtree"
-	],
-	"activationEvents": [
+    "color": "beige",
+    "theme": "light"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "ascii",
+    "asciitree",
+    "latex",
+    "tex",
+    "dirtree",
+    "tree",
+    "filetree",
+    "dirtree"
+  ],
+  "activationEvents": [
     "onCommand:extension.fileTreeToText"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.fileTreeToText",
-				"title": "Generate Filetree..."
-			}
-		],
-		"menus": {
-			"explorer/context": [
-				{
-					"when": "explorerResourceIsFolder",
-					"command": "extension.fileTreeToText",
-					"group": "cmdGroup@1"
-				}
-			]
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.fileTreeToText",
+        "title": "Generate Filetree..."
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "extension.fileTreeToText",
+          "group": "cmdGroup@1"
+        }
+      ]
     },
     "configuration": {
-			"id": "tree-generator",
-			"type": "object",
-			"title": "File Tree To Text Generator",
-			"properties": {
-				"tree-generator.defaultDepth": {
-					"type": "integer",
-					"default": 5,
-					"title": "Depth",
-					"description": "Set the default max depth of the generated tree"
+      "id": "tree-generator",
+      "type": "object",
+      "title": "File Tree To Text Generator",
+      "properties": {
+        "tree-generator.defaultDepth": {
+          "type": "integer",
+          "default": 5,
+          "title": "Depth",
+          "description": "Set the default max depth of the generated tree"
         },
         "tree-generator.maxFilesInSubtree": {
-					"type": "integer",
-					"default": 0,
-					"title": "Max. files per in tree / subtree",
-					"description": "Set a max. value for the amount of files in a tree or subtree. Set this to 0 equals no limitation"
+          "type": "integer",
+          "default": 0,
+          "title": "Max. files per in tree / subtree",
+          "description": "Set a max. value for the amount of files in a tree or subtree. Set this to 0 equals no limitation"
         },
         "tree-generator.maxDirsInSubtree": {
-					"type": "integer",
-					"default": 0,
-					"title": "Max. directories per in tree / subtree",
-					"description": "Set a max. value for the amount of directories in a tree or subtree. Set this to 0 equals no limitation"
+          "type": "integer",
+          "default": 0,
+          "title": "Max. directories per in tree / subtree",
+          "description": "Set a max. value for the amount of directories in a tree or subtree. Set this to 0 equals no limitation"
         },
         "tree-generator.defaultTarget": {
           "type": "string",
@@ -84,21 +84,21 @@
             "LaTeX",
             "Markdown"
           ],
-					"default": "ASCII",
-					"title": "Default Target",
-					"description": "Set your default output traget. It is just respected if prompt is disabled."
+          "default": "ASCII",
+          "title": "Default Target",
+          "description": "Set your default output traget. It is just respected if prompt is disabled."
         },
         "tree-generator.prompt": {
-					"type": "boolean",
-					"default": true,
-					"title": "Prompt",
-					"description": "Choose if the user will be promt or if the default settings will  be applied"
+          "type": "boolean",
+          "default": true,
+          "title": "Prompt",
+          "description": "Choose if the user will be promt or if the default settings will  be applied"
         },
         "tree-generator.dirsOnly": {
-					"type": "boolean",
-					"default": false,
-					"title": "Only directories",
-					"description": "Define if only directories will be part of the result"
+          "type": "boolean",
+          "default": false,
+          "title": "Only directories",
+          "description": "Define if only directories will be part of the result"
         },
         "tree-generator.targets": {
           "type": "array",
@@ -259,31 +259,39 @@
             }
           ]
         }
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js",
-		"postinstall": "node ./node_modules/vscode/bin/install"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.37.0",
-		"@types/fs-extra": "^8.0.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"tslint": "^5.12.1",
-		"vscode-test": "^1.0.2"
-	},
-	"publisher": "d-koppenhagen",
-	"dependencies": {
-		"fs-extra": "^8.1.0"
-	}
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
+    "@types/fs-extra": "^8.0.0",
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.37.0",
+    "glob": "^7.1.4",
+    "husky": "^3.0.5",
+    "mocha": "^6.1.4",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.0.2"
+  },
+  "publisher": "d-koppenhagen",
+  "dependencies": {
+    "fs-extra": "^8.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
 }
