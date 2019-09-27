@@ -109,4 +109,16 @@ suite('Extension Tests', () => {
       result
     );
   });
+
+  test('generate respect indentParentDirIsLast', () => {
+    testTree = new Tree({
+      ...gernericTreeConfig,
+      indentParentDirIsLast: '>>',
+    });
+    let result = testTree.getTree(__dirname, undefined, 1);
+    assert.equal(
+      'BEFORETREE<br/># HEADING 1: suite (/suite)<br/>#: 2: A (/suite/A)/<br/>┃ #? 3: B (/suite/A/B)/<br/>┃ >>#? 4: C (/suite/A/B/C)/<br/>┃ ┃ >>+: 5: 1 (/suite/A/B/C/1)<br/>┃ ┃ >>+? 5: ... (...)<br/>#! 2: l1 (/suite/l1)/<br/>┃ #: 3: l2 (/suite/l1/l2)/<br/>┃ ┃ #: 4: l3 (/suite/l1/l2/l3)/<br/>┃ ┃ ┃ #? 5: l4 (/suite/l1/l2/l3/l4)/<br/>┃ ┃ ┃ >>#? 6: l5 (/suite/l1/l2/l3/l4/l5)/<br/>┃ ┃ ┃ ┃ >>+? 7: l5f1.txt (/suite/l1/l2/l3/l4/l5/l5f1.txt)<br/>┃ ┃ +! 4: l2f1.txt (/suite/l1/l2/l2f1.txt)<br/>┃ ┃ +? 4: ... (...)<br/>┃ +! 3: l1f1.txt (/suite/l1/l1f1.txt)<br/>┃ +? 3: ... (...)<br/>+! 2: extension.test.js (/suite/extension.test.js)<br/>+? 2: ... (...)<br/>AFTERTREE',
+      result
+    );
+  });
 });

@@ -141,6 +141,11 @@
                 "title": "Indentation",
                 "description": "Set a string for indent per level of the tree"
               },
+              "indentParentDirIsLast": {
+                "type": "string",
+                "title": "Indentation for parent elements without next items",
+                "description": "Set a string for indent which is used prefered if set and if the parent element is the last in it's subtree (not further siblings)"
+              },
               "masks": {
                 "type": "object",
                 "title": "Masks configuration",
@@ -208,6 +213,7 @@
               "beforeTree": "",
               "afterTree": "",
               "indent": "┃ ",
+              "indentParentDirIsLast": "  ",
               "masks": {
                 "root": "#1/",
                 "file": {

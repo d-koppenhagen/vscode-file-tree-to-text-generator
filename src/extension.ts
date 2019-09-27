@@ -37,6 +37,19 @@ export interface TreeConfig {
   afterTree?: string;
   /** Set a string for indent per level of the tree */
   indent: string;
+  /**
+   * Set a string for indent which is used prefered if set and if the parent
+   * element is the last in it's subtree (not further siblings).
+   * @example
+   * ┃ ┃ ┃ ┗ imgage.jpg // indent, indent, mask:last
+   * ┃ ┃ ┗ text/        // indent, indent, mask:last
+   * ┃ ┃   ┣ file.txt   // indent, indent, indentParentDirIsLast, mask:default
+   * ┃ ┃   ┣ file2.txt  // indent, indent, indentParentDirIsLast, mask:default
+   * ┃ ┃   ┗ file3.txt  // indent, indent, indentParentDirIsLast, mask:last
+   * ┃ ┣ css/           // indent, mask:default
+   * ┃ ┃ ┗ style.css    // indent, indent, mask:last
+   */
+  indentParentDirIsLast?: string;
   /** Set a string of the basepath wich will be cut from the full path */
   basePath?: string;
   /** Configure the masks for tree items */
@@ -204,7 +217,11 @@ export class Tree {
    * generated
    * @param level The level from which the tree should be generated
    */
-  private generateTree(selectedRootPath: string, level: number) {
+  private generateTree(
+    selectedRootPath: string,
+    level: number,
+    parentDirIsLast = false
+  ) {
     let textOutput = '';
 
     // return if path to target is not valid
@@ -262,6 +279,7 @@ export class Tree {
       const isDirectory = isLimitPlaceholder
         ? false
         : fs.statSync(fullPath).isDirectory();
+      const isLastDirInTree = isDirectory && lastItem;
 
       // add directories
       const textEl = this.convertElementToTargetFormat(
@@ -272,9 +290,9 @@ export class Tree {
         firstItem,
         lastItem
       );
-      textOutput += this.formatLevel(level, textEl);
+      textOutput += this.formatLevel(level, textEl, parentDirIsLast);
       if (isDirectory && (!this.maxDepth || level !== this.maxDepth - 1)) {
-        textOutput += this.generateTree(fullPath, level + 1);
+        textOutput += this.generateTree(fullPath, level + 1, isLastDirInTree);
       }
     });
     return textOutput;
@@ -285,8 +303,13 @@ export class Tree {
    * @param level the level of the element
    * @param name the elements text
    */
-  private formatLevel(level: number, name: string) {
-    return `${Array(level + 1).join(this.config.indent)}${name}<br/>`;
+  private formatLevel(level: number, name: string, parentDirIsLast = false) {
+    const fullIndentString =
+      parentDirIsLast && this.config.indentParentDirIsLast
+        ? Array(level).join(this.config.indent) +
+          this.config.indentParentDirIsLast
+        : Array(level + 1).join(this.config.indent);
+    return `${fullIndentString}${name}<br/>`;
   }
 
   /**
