@@ -53,70 +53,90 @@ export interface TreeConfig {
 }
 
 export function activate(ctx: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand('extension.fileTreeToText', async (startDir) => {
-    // get configuration from `settings.json`
-    const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
-    const pickerItems = defaultConfig.map(el => el.picker);
-    let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as number;
-    const maxFilesPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxFilesInSubtree') as number;
-    const maxDirsPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxDirsInSubtree') as number;
-    let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as string;
-    let selected = pickerItems.find(el => el.label === defaultTarget);
-    const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as boolean;
-    const dirsOnly = vscode.workspace.getConfiguration().get('tree-generator.dirsOnly') as boolean;
+  const disposable = vscode.commands.registerCommand(
+    'extension.fileTreeToText',
+    async startDir => {
+      // get configuration from `settings.json`
+      const defaultConfig = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.targets') as TreeConfig[];
+      const pickerItems = defaultConfig.map(el => el.picker);
+      let maxDepth = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.defaultDepth') as number;
+      const maxFilesPerSubtree = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.maxFilesInSubtree') as number;
+      const maxDirsPerSubtree = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.maxDirsInSubtree') as number;
+      let defaultTarget = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.defaultTarget') as string;
+      let selected = pickerItems.find(el => el.label === defaultTarget);
+      const promptUser = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.prompt') as boolean;
+      const dirsOnly = vscode.workspace
+        .getConfiguration()
+        .get('tree-generator.dirsOnly') as boolean;
 
-    // handle user prompt interaction
-    if (promptUser) {
-      selected = await vscode.window.showQuickPick(pickerItems);
-      const depth = await vscode.window.showInputBox({
-        ignoreFocusOut: true,
-        prompt: 'Select the max depth of the tree',
-        value: maxDepth.toString(),
-        validateInput(value) {
-          return (Number(value) && Number(value) > 0 || !value)
-            ? null
-            : 'Please enter a valid number greater then 0 or leave the input empty';
-        }
-      });
-      maxDepth = Number(depth);
-    }
-
-    // tree root item
-    let tree = '';
-
-    // ASCII Tree
-    if (selected && selected.label) {
-      const searchLabel = selected.label;
-      const match = defaultConfig.find(el => el.picker.label === searchLabel);
-      if (match) {
-        const basePathBeforeSelection = path.dirname(startDir.fsPath);
-        const treeRef = new Tree({
-          ...match,
-          basePath: basePathBeforeSelection,
-          dirsOnly
+      // handle user prompt interaction
+      if (promptUser) {
+        selected = await vscode.window.showQuickPick(pickerItems);
+        const depth = await vscode.window.showInputBox({
+          ignoreFocusOut: true,
+          prompt: 'Select the max depth of the tree',
+          value: maxDepth.toString(),
+          validateInput(value) {
+            return (Number(value) && Number(value) > 0) || !value
+              ? null
+              : 'Please enter a valid number greater then 0 or leave the input empty';
+          },
         });
-        tree = treeRef.getTree(
-          startDir.fsPath,
-          Number(maxDepth),
-          Number(maxFilesPerSubtree),
-          Number(maxDirsPerSubtree)
-        );
+        maxDepth = Number(depth);
       }
+
+      // tree root item
+      let tree = '';
+
+      // ASCII Tree
+      if (selected && selected.label) {
+        const searchLabel = selected.label;
+        const match = defaultConfig.find(el => el.picker.label === searchLabel);
+        if (match) {
+          const basePathBeforeSelection = path.dirname(startDir.fsPath);
+          const treeRef = new Tree({
+            ...match,
+            basePath: basePathBeforeSelection,
+            dirsOnly,
+          });
+          tree = treeRef.getTree(
+            startDir.fsPath,
+            Number(maxDepth),
+            Number(maxFilesPerSubtree),
+            Number(maxDirsPerSubtree)
+          );
+        }
+      }
+
+      // initialize new web tab
+      const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
+        'text',
+        `${selected ? selected.label : ''} File Tree`,
+        { viewColumn: vscode.ViewColumn.Active },
+        { enableScripts: true }
+      );
+
+      // replace the target placeholder with the generated tree
+      vscodeWebViewOutputTab.webview.html = baseTemplate.replace(
+        '###TEXTTOREPLACE###',
+        tree
+      );
+
+      ctx.subscriptions.push(disposable);
     }
-
-    // initialize new web tab
-    const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
-      'text',
-      `${selected ? selected.label : ''} File Tree`,
-      { viewColumn: vscode.ViewColumn.Active },
-      { enableScripts: true }
-    );
-
-    // replace the target placeholder with the generated tree
-    vscodeWebViewOutputTab.webview.html = baseTemplate.replace('###TEXTTOREPLACE###', tree);
-
-    ctx.subscriptions.push(disposable);
-  });
+  );
 }
 
 export function deactivate() {}
@@ -158,8 +178,8 @@ export class Tree {
     this.maxDepth = maxDepth;
     this.maxDirsPerSubtree = maxDirsPerSubtree;
     this.maxFilesInSubtree = maxFilesInSubtree;
-    const beforeTree = (this.config.beforeTree || '');
-    const afterTree = (this.config.afterTree || '');
+    const beforeTree = this.config.beforeTree || '';
+    const afterTree = this.config.afterTree || '';
     const rootElement = this.convertElementToTargetFormat(
       1,
       path.basename(selectedRootPath),
@@ -169,11 +189,13 @@ export class Tree {
       false,
       true
     );
-    return beforeTree
-      + rootElement
-      + '<br/>'
-      + this.generateTree(selectedRootPath, 0)
-      + afterTree;
+    return (
+      beforeTree +
+      rootElement +
+      '<br/>' +
+      this.generateTree(selectedRootPath, 0) +
+      afterTree
+    );
   }
 
   /**
@@ -186,7 +208,9 @@ export class Tree {
     let textOutput = '';
 
     // return if path to target is not valid
-    if (!fs.existsSync(selectedRootPath)) { return ''; }
+    if (!fs.existsSync(selectedRootPath)) {
+      return '';
+    }
 
     // order by directory > file
     const beforSortFiles = fs.readdirSync(selectedRootPath);
@@ -212,7 +236,10 @@ export class Tree {
     }
 
     const countFilesInSubtree = filesArray.length;
-    if (this.maxFilesInSubtree && countFilesInSubtree > this.maxFilesInSubtree) {
+    if (
+      this.maxFilesInSubtree &&
+      countFilesInSubtree > this.maxFilesInSubtree
+    ) {
       filesArray = filesArray.slice(0, this.maxFilesInSubtree);
       filesArray.push(maxReachedString);
     }
@@ -223,10 +250,18 @@ export class Tree {
       const isLimitPlaceholder = el === maxReachedString;
 
       const elText = isLimitPlaceholder ? maxReachedString : el.toString();
-      const fullPath = isLimitPlaceholder ? maxReachedString : path.join(selectedRootPath, el.toString());
-      const lastItem = isLimitPlaceholder ? true : pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
-      const firstItem = isLimitPlaceholder ? false : pathsAndFilesArray.indexOf(el) === 0;
-      const isDirectory = isLimitPlaceholder ? false : fs.statSync(fullPath).isDirectory();
+      const fullPath = isLimitPlaceholder
+        ? maxReachedString
+        : path.join(selectedRootPath, el.toString());
+      const lastItem = isLimitPlaceholder
+        ? true
+        : pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
+      const firstItem = isLimitPlaceholder
+        ? false
+        : pathsAndFilesArray.indexOf(el) === 0;
+      const isDirectory = isLimitPlaceholder
+        ? false
+        : fs.statSync(fullPath).isDirectory();
 
       // add directories
       const textEl = this.convertElementToTargetFormat(
@@ -237,9 +272,9 @@ export class Tree {
         firstItem,
         lastItem
       );
-      textOutput+= this.formatLevel(level, textEl);
+      textOutput += this.formatLevel(level, textEl);
       if (isDirectory && (!this.maxDepth || level !== this.maxDepth - 1)) {
-        textOutput+= this.generateTree(fullPath, level + 1);
+        textOutput += this.generateTree(fullPath, level + 1);
       }
     });
     return textOutput;

@@ -93,7 +93,7 @@ _Example:_
 ### New
 
 - let the user choose the max depth for the tree. Leaving the input in the
-prompt empty will lead to the same output as before (mo limit for depth)
+  prompt empty will lead to the same output as before (mo limit for depth)
 
 ## [0.1.0] - 2019-09-03 (Initial Version)
 
