@@ -86,7 +86,7 @@
           ],
           "default": "ASCII",
           "title": "Default Target",
-          "description": "Set your default output traget. It is just respected if prompt is disabled."
+          "description": "Set your default output target. It is just respected if prompt is disabled."
         },
         "tree-generator.prompt": {
           "type": "boolean",

@@ -34,7 +34,7 @@ You can easily set default values and even disable the promt.
 currently available configuration options are:
 
 - Set a default value for the max tree depth
-- Define a default traget for the output. This can be use in combination with the option `tree-generator.prompt` to directly generate an output.
+- Define a default target for the output. This can be use in combination with the option `tree-generator.prompt` to directly generate an output.
 - Use only directories for the output and do not include files
 - Promt for options when generationg the tree
 - Configure amd adjust the target formats
