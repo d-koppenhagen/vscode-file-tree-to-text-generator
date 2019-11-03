@@ -289,7 +289,8 @@
     "mocha": "^6.1.4",
     "tslint": "^5.12.1",
     "typescript": "^3.3.1",
-    "vscode-test": "^1.0.2"
+    "vscode": "^1.1.36",
+    "vscode-test": "^1.2.2"
   },
   "publisher": "d-koppenhagen",
   "dependencies": {
@@ -297,6 +298,7 @@
   },
   "husky": {
     "hooks": {
+      "pre-push": "npm test",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   }
