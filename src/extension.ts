@@ -101,7 +101,7 @@ export function activate(ctx: vscode.ExtensionContext) {
           ignoreFocusOut: true,
           prompt: 'Select the max depth of the tree',
           value: maxDepth.toString(),
-          validateInput(value) {
+          validateInput(value: string) {
             return (Number(value) && Number(value) > 0) || !value
               ? null
               : 'Please enter a valid number greater then 0 or leave the input empty';
