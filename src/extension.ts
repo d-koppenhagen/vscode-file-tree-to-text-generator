@@ -141,17 +141,24 @@ export function activate(ctx: vscode.ExtensionContext) {
         { enableScripts: true }
       );
 
-      // replace the target placeholder with the generated tree
-      vscodeWebViewOutputTab.webview.html = baseTemplate.replace(
-        '###TEXTTOREPLACE###',
-        tree
+      const pathToHtml = vscode.Uri.file(
+        path.join(ctx.extensionPath, 'src', 'webview.html')
       );
+
+      const pathUri = pathToHtml.with({ scheme: 'vscode-resource' });
+
+      vscodeWebViewOutputTab.webview.html = fs
+        .readFileSync(pathUri.fsPath, 'utf8')
+        .replace('###TEXTTOREPLACE###', tree);
 
       ctx.subscriptions.push(disposable);
     }
   );
 }
 
+/**
+ * function that'll run when plugin will be deactivated
+ */
 export function deactivate() {}
 
 /**
@@ -361,87 +368,3 @@ export class Tree {
       .replace('#2', path);
   }
 }
-
-/**
- * defines the HTML template for the tab in which the tree result is inserted
- */
-const baseTemplate = `
-<!DOCTYPE html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Tree</title>
-    <style>
-      body.vscode-light {
-        color: black;
-      }
-
-      body.vscode-dark {
-        color: white;
-      }
-
-      body.vscode-high-contrast {
-        color: red;
-      }
-
-      form.actions {
-        padding-top: 20px;
-      }
-
-      .action-btn {
-        color: var(--vscode-button-foreground);
-        background-color: var(--vscode-button-background);
-        border: none;
-        width: auto;
-        padding: 2px 14px;
-        height: 30px;
-        display: inline-block;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.42857143;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: middle;
-        user-select:none;
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select:none;
-        -o-user-select:none;
-      }
-
-      .action-btn:hover {
-        background-color: var(--vscode-button-hoverBackground);
-      }
-    </style>
-  </head>
-
-  <body>
-    <form class="actions">
-      <button class="action-btn"
-              tabindex="0" role="button"
-              onclick="copyOutput()">
-        Copy to clipboard
-      </button>
-    </form>
-    <pre id="tree-output">###TEXTTOREPLACE###</pre>
-  </body>
-
-  <script>
-  function copyOutput() {
-    const containerid = 'tree-output';
-    if (document.selection) {
-      const range = document.body.createTextRange();
-      range.moveToElementText(document.getElementById(containerid));
-      range.select().createTextRange();
-      document.execCommand("copy");
-    } else if (window.getSelection) {
-      const range = document.createRange();
-      range.selectNode(document.getElementById(containerid));
-      window.getSelection().addRange(range);
-      document.execCommand("copy");
-      window.getSelection().removeAllRanges();
-    }
-  }
-  </script>
-</html>
-`;
