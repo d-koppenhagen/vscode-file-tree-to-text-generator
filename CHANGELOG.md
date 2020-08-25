@@ -1,6 +1,18 @@
-# Change Log
+# Changelog
 
-All notable changes to the "file-tree-to-text-generator" extension will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## 1.3.0 (2020-08-25)
+
+
+### Features
+
+* wip: introduces `indentParentDirIsLast` (related to: [#1](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/issues/1)) ([50ffbb2](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/commit/50ffbb2b6b84f85d82bb17f1bec435bc64250e99))
+
+
+### Bug Fixes
+
+* :pencil2: traget to target ([130d401](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/commit/130d401972c1a7fc28218de04c067eaf4cb864fa))
 
 ## [1.2.1] - 2019-09-18
 
