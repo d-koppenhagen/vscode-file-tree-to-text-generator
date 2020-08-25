@@ -275,7 +275,8 @@
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "release": "standard-version",
-    "postinstall": "node ./node_modules/vscode/bin/install"
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "publish": "vsce package && vsce publish"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
