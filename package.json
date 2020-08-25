@@ -13,7 +13,7 @@
     "url": "http://d-koppenhagen.de"
   },
   "engines": {
-    "vscode": "^1.37.0"
+    "vscode": "^1.48.0"
   },
   "icon": "images/icon.png",
   "galleryBanner": {
