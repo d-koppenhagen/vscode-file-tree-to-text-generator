@@ -274,6 +274,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
+    "release": "standard-version",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
@@ -287,6 +288,7 @@
     "glob": "^7.1.5",
     "husky": "^3.0.9",
     "mocha": "^6.2.2",
+    "standard-version": "^9.0.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4",
     "vscode": "^1.1.36",
