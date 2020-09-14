@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.4](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/compare/v1.3.3...v1.3.4) (2020-09-14)
+
+
+### Bug Fixes
+
+* use correct main file path ([c50074f](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/commit/c50074f00ea259aaea477d0c4e15d456263d0e88))
+
 ### [1.3.3](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/compare/v1.3.2...v1.3.3) (2020-09-14)
 
 ### [1.3.2](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/compare/v1.3.1...v1.3.2) (2020-09-14)
