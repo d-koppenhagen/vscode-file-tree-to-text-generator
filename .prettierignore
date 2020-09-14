@@ -1,2 +1,7 @@
-package.json
 package-lock.json
+*.js.map
+*.d.ts
+*.md
+*.min.*
+dist/**/*
+out/**/*

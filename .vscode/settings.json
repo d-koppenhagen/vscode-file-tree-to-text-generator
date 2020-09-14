@@ -7,5 +7,28 @@
     "out": true // set this to false to include "out" folder in search results
   },
   // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-  "typescript.tsc.autoDetect": "off"
+  "typescript.tsc.autoDetect": "off",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#ffffff",
+    "activityBar.activeBorder": "#df9f9f",
+    "activityBar.background": "#ffffff",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#df9f9f",
+    "activityBarBadge.foreground": "#15202b",
+    "statusBar.background": "#d6fdf6",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#a5fbeb",
+    "titleBar.activeBackground": "#d6fdf6",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#d6fdf699",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#d6fdf6",
+  "[markdown]": {
+    "editor.defaultFormatter": null
+  },
+  "cSpell.words": ["vsce"]
 }

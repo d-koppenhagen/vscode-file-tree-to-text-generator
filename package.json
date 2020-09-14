@@ -3,6 +3,12 @@
   "displayName": "File Tree to Text Generator",
   "description": "Print the selected directory within it's files and subdirectories as text (multiple formats available)",
   "version": "1.3.0",
+  "publisher": "d-koppenhagen",
+  "homepage": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator",
+  "bugs": {
+    "url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/issues",
+    "email": "mail@d-koppenhagen.de"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator.git"
@@ -12,6 +18,7 @@
     "email": "mail@d-koppenhagen.de",
     "url": "http://d-koppenhagen.de"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "engines": {
     "vscode": "^1.48.0"
   },
@@ -269,39 +276,58 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "webpack --mode production",
+    "webpack": "webpack --mode development",
+    "webpack:dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./",
     "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
+    "pretest": "npm run compile && npm run lint",
     "test": "node ./out/test/runTest.js",
     "release": "standard-version",
-    "postinstall": "node ./node_modules/vscode/bin/install",
     "publish": "vsce package && vsce publish"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.2.0",
-    "@commitlint/config-conventional": "^8.2.0",
-    "@types/fs-extra": "^8.0.1",
-    "@types/glob": "^7.1.1",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.5",
-    "@types/vscode": "^1.39.0",
-    "glob": "^7.1.5",
-    "husky": "^3.0.9",
-    "mocha": "^6.2.2",
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "@types/fs-extra": "^9.0.1",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.6.0",
+    "@types/vscode": "^1.48.0",
+    "@typescript-eslint/eslint-plugin": "^3.9.1",
+    "@typescript-eslint/parser": "^3.9.1",
+    "commitizen": "^4.1.2",
+    "copy-webpack-plugin": "^6.0.3",
+    "cz-conventional-changelog": "^3.2.0",
+    "eslint": "^7.7.0",
+    "eslint-config-prettier": "^6.11.0",
+    "glob": "^7.1.6",
+    "husky": "^4.2.5",
+    "mocha": "^8.1.1",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
     "standard-version": "^9.0.0",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.4",
-    "vscode": "^1.1.36",
-    "vscode-test": "^1.2.2"
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "vsce": "latest",
+    "vscode-test": "^1.4.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   },
-  "publisher": "d-koppenhagen",
   "dependencies": {
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^9.0.1"
   },
   "husky": {
     "hooks": {
+      "pre-commit": "pretty-quick --staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }
