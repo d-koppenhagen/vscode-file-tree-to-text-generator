@@ -42,7 +42,7 @@
     "dirtree"
   ],
   "activationEvents": [
-    "onCommand:extension.fileTreeToText"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
