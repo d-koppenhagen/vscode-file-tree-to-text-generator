@@ -1,6 +1,7 @@
 import { TreeConfig } from './interfaces';
 import * as path from 'path';
 import * as fs from 'fs';
+import { isMatch } from 'micromatch';
 
 /**
  * Create the class by handing over the tree configuration
@@ -22,13 +23,16 @@ export class Tree {
   /**
    * Create the class by handing over the tree configuration
    * @param config The configuration for tree creation
+   * @param exclude An array with glob strings to be excluded from the results
    */
-  constructor(private config: TreeConfig) {}
+  constructor(private config: TreeConfig, private exclude?: string[]) {}
 
   /**
    * Get the HTML output of the tree for a given path
    * @param selectedRootPath The path the user choose for tree generation
    * @param maxDepth The max depth of the generated tree.
+   * @param maxFilesInSubtree The max listed number of files in a subtree.
+   * @param maxDirsPerSubtree The max listed number of directories in a subtree.
    */
   public getTree(selectedRootPath: string, maxDepth?: number, maxFilesInSubtree?: number, maxDirsPerSubtree?: number) {
     this.maxDepth = maxDepth;
@@ -68,6 +72,15 @@ export class Tree {
 
     let filesArray: string[] = [];
     beforeSortFiles.forEach((el) => {
+      // exclude all files and dirs matching glob excludes
+      if (this.exclude && isMatch(el.toString(), this.exclude)) {
+        console.info(
+          `File Tree To Text Generator: Excluding ${el.toString()} as it matches glob excludes configuration.`,
+          this.exclude,
+        );
+        return;
+      }
+
       const fullPath = path.join(selectedRootPath, el.toString());
       if (fs.statSync(fullPath).isDirectory()) {
         dirsArray.push(el);

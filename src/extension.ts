@@ -17,6 +17,15 @@ export function activate(ctx: ExtensionContext) {
     let selected = pickerItems.find((el) => el.label === defaultTarget);
     const promptUser = workspace.getConfiguration().get('tree-generator.prompt') as boolean;
     const dirsOnly = workspace.getConfiguration().get('tree-generator.dirsOnly') as boolean;
+    const excludeFilesGlobal = workspace.getConfiguration().get('files.exclude') as { [key: string]: boolean };
+    const excludeFilesExtension = workspace.getConfiguration().get('tree-generator.exclude') as {
+      [key: string]: boolean;
+    };
+
+    const excludeFiles = { ...excludeFilesGlobal, ...excludeFilesExtension };
+
+    const globsUnfiltered = Object.keys(excludeFiles);
+    const exclude = globsUnfiltered.filter((key) => excludeFiles[key]);
 
     // handle user prompt interaction
     if (promptUser) {
@@ -43,11 +52,14 @@ export function activate(ctx: ExtensionContext) {
       const match = defaultConfig.find((el) => el.picker.label === searchLabel);
       if (match) {
         const basePathBeforeSelection = path.dirname(startDir.fsPath);
-        const treeRef = new Tree({
-          ...match,
-          basePath: basePathBeforeSelection,
-          dirsOnly,
-        });
+        const treeRef = new Tree(
+          {
+            ...match,
+            basePath: basePathBeforeSelection,
+            dirsOnly,
+          },
+          exclude,
+        );
         tree = treeRef.getTree(
           startDir.fsPath,
           Number(maxDepth),

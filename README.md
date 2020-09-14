@@ -49,6 +49,29 @@ If there are more files or directories as defined, they will be replaced by an `
 
 ![File-Tree-To-Text max files and / or directories configuration](./images/file-tree-to-text-max-files.gif)
 
+### Exclude files / directories from the result
+
+By default, the extension respects the glob exclude configuration `files.exclude` from the VSCode settings.
+All matching files and directories matching those globs won't be part of the final result.
+However, you can define specific globs that will extend / override the settings in this configuration just for the tree generator.
+The configuration is an array ob glob definitions.
+
+In the example below, you can see that the `node_modules` will be excluded globally.
+But because the exclude setting for the same pattern in the local settings is disabled (`false`), the matching paths will be included in the result.
+
+```json
+{
+  "files.exclude": {
+    // ...
+    "**node_modules": true
+  },
+  "tree-generator.exclude": {
+    "**node_modules": false,
+    "**some-path/**/*.exclude.me": true
+  }
+}
+```
+
 ### Define custom generators or modify defaults
 
 You can define custom generators or modify the default outputs by adjusting the configuration in you `settings.json` file.
