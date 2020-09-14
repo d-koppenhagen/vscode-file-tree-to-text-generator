@@ -66,94 +66,72 @@ export interface TreeConfig {
 }
 
 export function activate(ctx: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand(
-    'extension.fileTreeToText',
-    async startDir => {
-      // get configuration from `settings.json`
-      const defaultConfig = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.targets') as TreeConfig[];
-      const pickerItems = defaultConfig.map(el => el.picker);
-      let maxDepth = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.defaultDepth') as number;
-      const maxFilesPerSubtree = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.maxFilesInSubtree') as number;
-      const maxDirsPerSubtree = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.maxDirsInSubtree') as number;
-      let defaultTarget = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.defaultTarget') as string;
-      let selected = pickerItems.find(el => el.label === defaultTarget);
-      const promptUser = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.prompt') as boolean;
-      const dirsOnly = vscode.workspace
-        .getConfiguration()
-        .get('tree-generator.dirsOnly') as boolean;
+  const disposable = vscode.commands.registerCommand('extension.fileTreeToText', async (startDir) => {
+    // get configuration from `settings.json`
+    const defaultConfig = vscode.workspace.getConfiguration().get('tree-generator.targets') as TreeConfig[];
+    const pickerItems = defaultConfig.map((el) => el.picker);
+    let maxDepth = vscode.workspace.getConfiguration().get('tree-generator.defaultDepth') as number;
+    const maxFilesPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxFilesInSubtree') as number;
+    const maxDirsPerSubtree = vscode.workspace.getConfiguration().get('tree-generator.maxDirsInSubtree') as number;
+    let defaultTarget = vscode.workspace.getConfiguration().get('tree-generator.defaultTarget') as string;
+    let selected = pickerItems.find((el) => el.label === defaultTarget);
+    const promptUser = vscode.workspace.getConfiguration().get('tree-generator.prompt') as boolean;
+    const dirsOnly = vscode.workspace.getConfiguration().get('tree-generator.dirsOnly') as boolean;
 
-      // handle user prompt interaction
-      if (promptUser) {
-        selected = await vscode.window.showQuickPick(pickerItems);
-        const depth = await vscode.window.showInputBox({
-          ignoreFocusOut: true,
-          prompt: 'Select the max depth of the tree',
-          value: maxDepth.toString(),
-          validateInput(value: string) {
-            return (Number(value) && Number(value) > 0) || !value
-              ? null
-              : 'Please enter a valid number greater then 0 or leave the input empty';
-          },
-        });
-        maxDepth = Number(depth);
-      }
-
-      // tree root item
-      let tree = '';
-
-      // ASCII Tree
-      if (selected && selected.label) {
-        const searchLabel = selected.label;
-        const match = defaultConfig.find(el => el.picker.label === searchLabel);
-        if (match) {
-          const basePathBeforeSelection = path.dirname(startDir.fsPath);
-          const treeRef = new Tree({
-            ...match,
-            basePath: basePathBeforeSelection,
-            dirsOnly,
-          });
-          tree = treeRef.getTree(
-            startDir.fsPath,
-            Number(maxDepth),
-            Number(maxFilesPerSubtree),
-            Number(maxDirsPerSubtree)
-          );
-        }
-      }
-
-      // initialize new web tab
-      const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
-        'text',
-        `${selected ? selected.label : ''} File Tree`,
-        { viewColumn: vscode.ViewColumn.Active },
-        { enableScripts: true }
-      );
-
-      const pathToHtml = vscode.Uri.file(
-        path.join(ctx.extensionPath, 'src', 'webview.html')
-      );
-
-      const pathUri = pathToHtml.with({ scheme: 'vscode-resource' });
-
-      vscodeWebViewOutputTab.webview.html = fs
-        .readFileSync(pathUri.fsPath, 'utf8')
-        .replace('###TEXTTOREPLACE###', tree);
-
-      ctx.subscriptions.push(disposable);
+    // handle user prompt interaction
+    if (promptUser) {
+      selected = await vscode.window.showQuickPick(pickerItems);
+      const depth = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        prompt: 'Select the max depth of the tree',
+        value: maxDepth.toString(),
+        validateInput(value: string) {
+          return (Number(value) && Number(value) > 0) || !value
+            ? null
+            : 'Please enter a valid number greater then 0 or leave the input empty';
+        },
+      });
+      maxDepth = Number(depth);
     }
-  );
+
+    // tree root item
+    let tree = '';
+
+    // ASCII Tree
+    if (selected && selected.label) {
+      const searchLabel = selected.label;
+      const match = defaultConfig.find((el) => el.picker.label === searchLabel);
+      if (match) {
+        const basePathBeforeSelection = path.dirname(startDir.fsPath);
+        const treeRef = new Tree({
+          ...match,
+          basePath: basePathBeforeSelection,
+          dirsOnly,
+        });
+        tree = treeRef.getTree(
+          startDir.fsPath,
+          Number(maxDepth),
+          Number(maxFilesPerSubtree),
+          Number(maxDirsPerSubtree),
+        );
+      }
+    }
+
+    // initialize new web tab
+    const vscodeWebViewOutputTab = vscode.window.createWebviewPanel(
+      'text',
+      `${selected ? selected.label : ''} File Tree`,
+      { viewColumn: vscode.ViewColumn.Active },
+      { enableScripts: true },
+    );
+
+    const uri = vscode.Uri.parse(ctx.asAbsolutePath(path.join('dist', 'webview.html')));
+    const pathUri = uri.with({ scheme: 'vscode-resource' });
+    const finalHtml = fs.readFileSync(pathUri.fsPath, 'utf8').replace('###TEXTTOREPLACE###', tree);
+    vscodeWebViewOutputTab.webview.html = finalHtml;
+
+    ctx.subscriptions.push(disposable);
+  });
 }
 
 /**
@@ -189,12 +167,7 @@ export class Tree {
    * @param selectedRootPath The path the user choose for tree generation
    * @param maxDepth The max depth of the generated tree.
    */
-  public getTree(
-    selectedRootPath: string,
-    maxDepth?: number,
-    maxFilesInSubtree?: number,
-    maxDirsPerSubtree?: number
-  ) {
+  public getTree(selectedRootPath: string, maxDepth?: number, maxFilesInSubtree?: number, maxDirsPerSubtree?: number) {
     this.maxDepth = maxDepth;
     this.maxDirsPerSubtree = maxDirsPerSubtree;
     this.maxFilesInSubtree = maxFilesInSubtree;
@@ -207,15 +180,9 @@ export class Tree {
       true,
       true,
       false,
-      true
+      true,
     );
-    return (
-      beforeTree +
-      rootElement +
-      '<br/>' +
-      this.generateTree(selectedRootPath, 0) +
-      afterTree
-    );
+    return beforeTree + rootElement + '<br/>' + this.generateTree(selectedRootPath, 0) + afterTree;
   }
 
   /**
@@ -224,11 +191,7 @@ export class Tree {
    * generated
    * @param level The level from which the tree should be generated
    */
-  private generateTree(
-    selectedRootPath: string,
-    level: number,
-    parentDirIsLast = false
-  ) {
+  private generateTree(selectedRootPath: string, level: number, parentDirIsLast = false) {
     let textOutput = '';
 
     // return if path to target is not valid
@@ -241,7 +204,7 @@ export class Tree {
     let dirsArray: string[] = [];
 
     let filesArray: string[] = [];
-    beforSortFiles.forEach(el => {
+    beforSortFiles.forEach((el) => {
       const fullPath = path.join(selectedRootPath, el.toString());
       if (fs.statSync(fullPath).isDirectory()) {
         dirsArray.push(el);
@@ -260,43 +223,25 @@ export class Tree {
     }
 
     const countFilesInSubtree = filesArray.length;
-    if (
-      this.maxFilesInSubtree &&
-      countFilesInSubtree > this.maxFilesInSubtree
-    ) {
+    if (this.maxFilesInSubtree && countFilesInSubtree > this.maxFilesInSubtree) {
       filesArray = filesArray.slice(0, this.maxFilesInSubtree);
       filesArray.push(maxReachedString);
     }
 
     const pathsAndFilesArray = [...dirsArray, ...filesArray];
 
-    pathsAndFilesArray.forEach(el => {
+    pathsAndFilesArray.forEach((el) => {
       const isLimitPlaceholder = el === maxReachedString;
 
       const elText = isLimitPlaceholder ? maxReachedString : el.toString();
-      const fullPath = isLimitPlaceholder
-        ? maxReachedString
-        : path.join(selectedRootPath, el.toString());
-      const lastItem = isLimitPlaceholder
-        ? true
-        : pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
-      const firstItem = isLimitPlaceholder
-        ? false
-        : pathsAndFilesArray.indexOf(el) === 0;
-      const isDirectory = isLimitPlaceholder
-        ? false
-        : fs.statSync(fullPath).isDirectory();
+      const fullPath = isLimitPlaceholder ? maxReachedString : path.join(selectedRootPath, el.toString());
+      const lastItem = isLimitPlaceholder ? true : pathsAndFilesArray.indexOf(el) === pathsAndFilesArray.length - 1;
+      const firstItem = isLimitPlaceholder ? false : pathsAndFilesArray.indexOf(el) === 0;
+      const isDirectory = isLimitPlaceholder ? false : fs.statSync(fullPath).isDirectory();
       const isLastDirInTree = isDirectory && lastItem;
 
       // add directories
-      const textEl = this.convertElementToTargetFormat(
-        level + 2,
-        elText,
-        fullPath,
-        isDirectory,
-        firstItem,
-        lastItem
-      );
+      const textEl = this.convertElementToTargetFormat(level + 2, elText, fullPath, isDirectory, firstItem, lastItem);
       textOutput += this.formatLevel(level, textEl, parentDirIsLast);
       if (isDirectory && (!this.maxDepth || level !== this.maxDepth - 1)) {
         textOutput += this.generateTree(fullPath, level + 1, isLastDirInTree);
@@ -313,8 +258,7 @@ export class Tree {
   private formatLevel(level: number, name: string, parentDirIsLast = false) {
     const fullIndentString =
       parentDirIsLast && this.config.indentParentDirIsLast
-        ? Array(level).join(this.config.indent) +
-          this.config.indentParentDirIsLast
+        ? Array(level).join(this.config.indent) + this.config.indentParentDirIsLast
         : Array(level + 1).join(this.config.indent);
     return `${fullIndentString}${name}<br/>`;
   }
@@ -337,7 +281,7 @@ export class Tree {
     isDirectory = false,
     isFirst = false,
     isLast = false,
-    isRoot = false
+    isRoot = false,
   ) {
     // cur first part of the path (before selected dir)
     if (this.config.basePath) {
@@ -345,9 +289,7 @@ export class Tree {
     }
 
     // select the correct mask config for type file or directory
-    const maskConfig = isDirectory
-      ? this.config.masks.directory
-      : this.config.masks.file;
+    const maskConfig = isDirectory ? this.config.masks.directory : this.config.masks.file;
 
     // determine the correct mask from config
     let mask = '';
@@ -362,9 +304,6 @@ export class Tree {
     }
 
     // build element string by using the mask
-    return mask
-      .replace('#0', level.toString())
-      .replace('#1', file)
-      .replace('#2', path);
+    return mask.replace('#0', level.toString()).replace('#1', file).replace('#2', path);
   }
 }
