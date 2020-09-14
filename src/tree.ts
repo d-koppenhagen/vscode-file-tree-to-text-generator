@@ -142,7 +142,7 @@ export class Tree {
   /**
    * This method will use the configured masks to bring the element into the
    * target format
-   * @param level the level in the tree heirarchie
+   * @param level the level in the tree hierarchie
    * @param file the name of the file / directory
    * @param path the (full) path to the file or directory
    * @param isDirectory a flag to mark if the element is a directory
