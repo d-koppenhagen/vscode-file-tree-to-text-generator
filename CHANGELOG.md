@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/compare/v1.3.0...v1.3.1) (2020-09-14)
+
+
+### Bug Fixes
+
+* use correct path to HTML template for webview ([741b5e1](https://github.com/d-koppenhagen/vscode-file-tree-to-text-generator/commit/741b5e18de3bbf6e7e4159fdc69bfd4b2f45621d))
+
 ## 1.3.0 (2020-08-25)
 
 
