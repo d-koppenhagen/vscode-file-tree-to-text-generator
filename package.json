@@ -293,7 +293,8 @@
     "pretest": "npm run compile && npm run lint",
     "test": "node ./out/test/runTest.js",
     "release": "standard-version",
-    "publish": "vsce package && vsce publish"
+    "vscode:package": "npx @vscode/vsce package",
+    "publish": "npm run vscode:package && @vscode/vsce publish"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
@@ -319,7 +320,7 @@
     "standard-version": "^9.0.0",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7",
-    "vsce": "latest",
+    "@vscode/vsce": "latest",
     "vscode-test": "^1.4.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
